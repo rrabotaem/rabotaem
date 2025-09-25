@@ -1,0 +1,17 @@
+services:
+  photon-dev:
+    build:
+      context: "."
+      dockerfile: Dockerfile.local
+    restart: "no"
+    ports:
+      - 80:5173
+    env_file:
+      - .env
+    environment:
+      - PUBLIC_INSTANCE_URL=api-dev.rabotaem.app
+      # - PUBLIC_INSTANCE_URL=lemmy.spxd.ru
+      - PUBLIC_LANGUAGE=ru
+    volumes:
+      - ./:/app
+

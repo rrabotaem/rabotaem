@@ -1,0 +1,161 @@
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  PROD_DEPLOY_USER: "root"
+  PROD_DEPLOY_HOST: "rabotaem.app"
+  RABOTAEM_DEPLOY_DIRECTORY: "/opt/photon/"
+  APIDEV_DEPLOY_DIRECTORY: "/opt/photon-dev/"
+  PTSR_DEPLOY_DIRECTORY: "/opt/ptsr-photon/"
+  APP_IMAGE_NAME: "$CI_REGISTRY_IMAGE/photon"
+
+
+.ssh: &ssh
+  - eval $(ssh-agent -s)
+  - echo "$GITLAB_SSH_PRIVATE_KEY" | wc -c
+  - ssh-add <(echo "$GITLAB_SSH_PRIVATE_KEY" | base64 -d)
+  - mkdir -p ~/.ssh
+  - ssh-keyscan -H $PROD_DEPLOY_HOST >> ~/.ssh/known_hosts
+
+.docker: &docker
+  - echo 'docker init'
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker version
+
+stages:
+  - build
+  - deploy
+  - sync
+
+services:
+  - mirror.gcr.io/docker:dind
+
+image: 
+  name: docker:latest
+
+
+build-dev-app:
+  stage: build
+  when: manual
+  before_script: *docker
+  script:
+    - docker pull $APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG || true
+    - docker pull $APP_IMAGE_NAME:dev || true
+    - echo Using tag $APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG
+    - docker build -t $APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG -t $APP_IMAGE_NAME:dev .
+    - docker push --all-tags $APP_IMAGE_NAME
+
+
+build-prod-app:
+  stage: build
+  when: manual
+  before_script: *docker
+  script:
+    - docker pull $APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG || true
+    - docker pull $APP_IMAGE_NAME:latest || true
+    - echo Using tag $APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG
+    - docker build -t $APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG -t $APP_IMAGE_NAME:latest .
+    - docker push --all-tags $APP_IMAGE_NAME
+
+deploy-rabotaem-env:
+  stage: deploy
+  image: kroniak/ssh-client
+  before_script: *ssh
+  script:
+    - echo $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST     
+    - scp ./.env.rabotaem "${PROD_DEPLOY_USER}@${PROD_DEPLOY_HOST}:${RABOTAEM_DEPLOY_DIRECTORY}/.env"
+  when: manual
+
+deploy-api-dev-env:
+  stage: deploy
+  image: kroniak/ssh-client
+  before_script: *ssh
+  script:
+    - echo $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST     
+    - scp ./.env.rabotaem "${PROD_DEPLOY_USER}@${PROD_DEPLOY_HOST}:${APIDEV_DEPLOY_DIRECTORY}/.env"
+  when: manual
+
+deploy-ptsr-env:
+  stage: deploy
+  image: mirror.gcr.io/kroniak/ssh-client
+  before_script: *ssh
+  script:
+    - echo $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST     
+    - scp ./.env.ptsr "${PROD_DEPLOY_USER}@${PROD_DEPLOY_HOST}:${PTSR_DEPLOY_DIRECTORY}/.env"
+  when: manual
+
+deploy-rabotaem-app:
+  stage: deploy
+  image: kroniak/ssh-client
+  needs: [build-prod-app]
+  before_script: *ssh
+  script:
+    - echo $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST     
+    - | 
+      ssh $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST "
+        set -e; 
+        cd ${RABOTAEM_DEPLOY_DIRECTORY};
+        pwd;
+        docker system prune -f;
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY;
+        docker pull $APP_IMAGE_NAME:latest ;
+        docker compose up -d;
+        sleep 30;
+        docker compose ps;
+        docker compose logs --since 1m "
+  when: manual
+
+deploy-api-dev-app:
+  stage: deploy
+  image: kroniak/ssh-client
+  needs: [build-dev-app]
+  before_script: *ssh
+  script:
+    - echo $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST     
+    - | 
+      ssh $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST "
+        set -e; 
+        cd ${APIDEV_DEPLOY_DIRECTORY};
+        pwd;
+        docker system prune -f;
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY;
+        docker pull $APP_IMAGE_NAME:dev ;
+        docker compose up -d;
+        sleep 30;
+        docker compose ps;
+        docker compose logs --since 1m "
+  when: manual
+
+deploy-ptsr-app:
+  stage: deploy
+  image: kroniak/ssh-client
+  needs: [build-prod-app]
+  before_script: *ssh
+  script:
+    - echo $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST     
+    - | 
+      ssh $PROD_DEPLOY_USER@$PROD_DEPLOY_HOST "
+        set -e; 
+        cd ${PTSR_DEPLOY_DIRECTORY};
+        pwd;
+        docker system prune -f;
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY;
+        docker pull $APP_IMAGE_NAME:latest ;
+        docker compose up -d;
+        sleep 30;
+        docker compose ps;
+        docker compose logs --since 1m "
+  when: manual
+
+sync-repo-gitlabl2github:
+  when: manual
+  stage: sync
+  image: kroniak/ssh-client
+  before_script:
+    - apk add --no-cache git rsync
+    - eval $(ssh-agent -s)
+    - echo "$GITLAB_SSH_PRIVATE_KEY" | wc -c
+    - ssh-add <(echo "$GITLAB_SSH_PRIVATE_KEY" | base64 -d)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+  script:    
+    - /usr/bin/env sh scripts/repo_sync.sh

@@ -1,0 +1,138 @@
+<script lang="ts" context="module">
+  const youtubeDomain = (place: 'youtube' | 'invidious' | 'piped') => {
+    switch (place) {
+      case 'youtube': {
+        return 'www.youtube-nocookie.com'
+      }
+      case 'invidious': {
+        return get(userSettings).embeds.invidious || 'yewtu.be'
+      }
+      case 'piped': {
+        return get(userSettings).embeds.piped || 'piped.video'
+      }
+    }
+  }
+
+  function youtubeVideoID(url: string): string | null {
+    const regex =
+      /^(?:https?:\/\/)?(?:www\.|m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|shorts\/|live\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/
+    const match = url.match(regex)
+
+    if (match && match[1]) {
+      return match[1]
+    }
+
+    return null
+  }
+</script>
+
+<script lang="ts">
+  import {
+    Icon,
+    PuzzlePiece,
+    VideoCamera,
+    type IconSource,
+  } from 'svelte-hero-icons'
+  import { optimizeImageURL, type IframeType, type MediaType } from '../helpers'
+  import { userSettings } from '$lib/settings'
+  import { get } from 'svelte/store'
+
+  export let type: IframeType = 'none'
+  export let thumbnail: string | undefined = undefined
+  export let url: string
+  export let opened = !$userSettings.embeds.clickToView
+  export let autoplay: boolean = $userSettings.embeds.clickToView
+
+  const urlToEmbed = (inputUrl: string) => {
+    if (type == 'video') {
+      return inputUrl
+    }
+
+    if (type == 'youtube') {
+      const url = new URL(inputUrl)
+
+      const videoID = youtubeVideoID(inputUrl)
+
+      if (autoplay) url.searchParams.set('autoplay', '1')
+
+      return `https://${youtubeDomain(
+        $userSettings.embeds.youtube
+      )}/embed/${videoID}?${url.searchParams.toString()}`
+    }
+
+    return ''
+  }
+
+  const typeData = (
+    type: IframeType
+  ): {
+    icon: IconSource
+    text: string
+  } => {
+    switch (type) {
+      case 'youtube': {
+        return {
+          icon: VideoCamera,
+          text: 'YouTube видео',
+        }
+      }
+      case 'video': {
+        return {
+          icon: VideoCamera,
+          text: 'Video',
+        }
+      }
+      default: {
+        return {
+          icon: PuzzlePiece,
+          text: 'Embed',
+        }
+      }
+    }
+  }
+
+  $: data = typeData(type)
+  $: embedUrl = urlToEmbed(url)
+</script>
+
+<!-- 
+  @component
+  Displays a video file or embedded video iframe.
+-->
+{#if opened}
+  {#if type == 'video'}
+    <!-- svelte-ignore a11y-media-has-caption -->
+    <video {autoplay} controls class="rounded-xl aspect-video {$$props.class}">
+      <source src={url} />
+    </video>
+  {:else}
+    <iframe
+      src={embedUrl}
+      title="Embed player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      class="aspect-video rounded-xl dark:bg-zinc-900 {$$props.class ?? ''}"
+    />
+  {/if}
+{:else}
+  <button
+    on:click={() => (opened = true)}
+    class="aspect-video w-full h-full z-0 overflow-hidden relative rounded-xl flex flex-col gap-2 items-center justify-center text-white"
+  >
+    {#if thumbnail}
+      <img
+        src={optimizeImageURL(thumbnail, 512)}
+        class="absolute top-0 left-0 -z-10 brightness-[25%] w-full object-cover h-full"
+        alt=""
+      />
+    {:else}
+      <div
+        class="absolute blur-3xl -z-10 top-0 left-0 w-full h-full bg-gradient-to-br from-green-800 via-blue-900 via-20% to-red-700"
+      />
+    {/if}
+    <Icon src={data.icon} solid size="48" />
+    <h1 class="font-bold text-xl">{data.text}</h1>
+    <p>Нажмите чтобы увидеть контент</p>
+  </button>
+{/if}

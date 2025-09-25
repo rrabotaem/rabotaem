@@ -1,0 +1,374 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1 {
+    @apply font-normal leading-[1.2] !important;
+  }
+}
+
+/* Дополнительно убедимся, что все h1 будут regular */
+h1 {
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+}
+
+/* Переопределим стили для h1 в постах */
+.post h1 {
+  @apply text-2xl font-medium mb-4;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Дополнительно убедимся, что все h2 будут regular */
+h2 {
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+}
+
+/* Переопределим стили для h2 в постах */
+.post h2 {
+  @apply text-xl font-medium mb-3 mt-3;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+/* Новые стили для h3 */
+.post h3 {
+  @apply text-lg font-medium mb-2 mt-2;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Стили для разных режимов просмотра */
+.post.cozy h1 {
+  @apply text-xl mb-3;
+}
+
+.post.compact h1 {
+  @apply text-lg mb-2;
+}
+
+/* Адаптивные стили */
+@media (max-width: 640px) {
+  .post h1 {
+    @apply text-xl mb-3;
+  }
+  
+  .post h2 {
+    @apply text-lg mb-2;
+  }
+
+  .post h3 {
+    @apply text-base mb-1; /* Адаптивный размер для мобилок */
+  }
+}
+
+/* Добавьте эти стили для улучшения внешнего вида навбара */
+@layer components {
+  .navbar-search {
+    @apply w-full h-10 rounded-full flex items-center gap-2 px-4 
+           bg-slate-100 dark:bg-zinc-900 
+           hover:bg-slate-200 dark:hover:bg-zinc-800 
+           transition-colors text-slate-600 dark:text-zinc-400;
+  }
+
+  .navbar-button {
+    @apply w-12 h-12 rounded-full flex items-center justify-center 
+           hover:bg-slate-100 dark:hover:bg-zinc-800 
+           transition-colors
+           md:w-10 md:h-10;
+  }
+}
+
+/* CSS переменные для кнопки Primary */
+:root {
+  --btn-primary-background: #0b5dd7;
+  --btn-primary-background-hover: #094fb8;
+  --btn-primary-color: #ffffff;
+  --btn-primary-border: transparent;
+  --btn-primary-border-radius: 100px;
+  --btn-primary-padding-x: 1.5rem;
+  --btn-primary-padding-y: 0.75rem;
+  --btn-primary-font-size: 1rem;
+  --btn-primary-font-weight: 500;
+  --btn-primary-line-height: 1.25rem;
+  --btn-primary-transition: all 0.2s;
+  --btn-primary-shadow: none;
+  --btn-primary-shadow-hover: none;
+  --btn-primary-width: auto;
+  --btn-primary-display: inline-flex;
+  --btn-primary-align-items: center;
+  --btn-primary-justify-content: center;
+}
+
+.dark {
+  --btn-primary-background: #2563eb;
+  --btn-primary-background-hover: #1d4ed8;
+  --btn-primary-color: #ffffff;
+  --btn-primary-shadow: none;
+  --btn-primary-shadow-hover: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+:global(a.btn-primary),
+:global(.btn-primary) {
+  color: var(--btn-primary-color) !important;
+}
+
+:global(a.btn-primary:hover),
+:global(.btn-primary:hover),
+:global(a.btn-primary:focus),
+:global(.btn-primary:focus) {
+  color: var(--btn-primary-color) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-background-hover);
+  text-decoration: none;
+  box-shadow: var(--btn-primary-shadow-hover);
+}
+
+.dark .btn-primary {
+  background-color: var(--btn-primary-background);
+  color: var(--btn-primary-color);
+}
+
+.dark .btn-primary:hover {
+  background-color: var(--btn-primary-background-hover);
+}
+
+:global(.dark) :global(p) :global(a.btn-primary),
+:global(.dark) :global(p) :global(.btn-primary),
+:global(.dark) :global(p) :global(a.btn-primary:hover),
+:global(.dark) :global(p) :global(.btn-primary:hover),
+:global(.dark) :global(p) :global(a.btn-primary:focus),
+:global(.dark) :global(p) :global(.btn-primary:focus) {
+  color: #e4e4e7 !important;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/font/Roboto-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/font/Roboto-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/font/Roboto-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
+body {
+  @apply bg-slate-50 text-slate-900 dark:bg-zinc-950 dark:text-zinc-200 accent-slate-950 dark:accent-zinc-50;
+  text-rendering: optimizeLegibility;
+  @apply font-sans;
+}
+
+.wait * {
+  cursor: wait !important;
+}
+
+#nprogress {
+  z-index: 999 !important;
+  position: fixed !important;
+}
+
+#nprogress .bar {
+  @apply bg-primary-900 dark:bg-primary-100 !important;
+  z-index: 999 !important;
+  height: 1px !important;
+}
+
+#nprogress .peg {
+  display: none !important;
+  z-index: 999 !important;
+}
+
+pre:not(.code-baseline) {
+  @apply bg-slate-100 p-2 rounded-xl my-2 max-w-full whitespace-pre-wrap
+  border-slate-200 border dark:bg-zinc-950 dark:border-zinc-900 text-xs;
+}
+
+:not(pre) > code:not(.code-baseline) {
+  @apply bg-slate-100 dark:bg-zinc-950;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  padding: 1px;
+}
+
+::-webkit-scrollbar-track {
+  width: 2px;
+  margin: 1px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  @apply bg-slate-200;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800;
+}
+
+select:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: none;
+  @apply ring-2 ring-offset-1 ring-primary-900 dark:ring-primary-100;
+}
+
+/* Глобальные стили для заголовков в постах */
+.post p, .post ol, .post ul, .post h1, .post h2, .post h3 {
+  @apply text-black dark:text-zinc-200;
+}
+
+/* Стили для списков в постах */
+.post ol {
+  @apply list-decimal pl-6 ml-4 my-3 space-y-2;
+}
+
+.post ul {
+  @apply list-disc pl-6 ml-4 my-3 space-y-2;
+}
+
+/* Стили для ссылок в постах */
+.post a {
+  @apply text-[#0b5dd7] dark:text-[#418af4] hover:underline;
+  @apply transition-colors duration-200;
+}
+
+.post a:hover {
+  @apply text-[#094fb8] dark:text-[#356dc4];
+}
+
+/* Стили для таблиц в постах */
+.post table {
+  @apply w-full my-6 border-collapse;
+}
+
+.post table th,
+.post table td {
+  @apply border border-slate-200 dark:border-zinc-800;
+  @apply p-2 text-left;
+}
+
+.post table th {
+  @apply bg-slate-50 dark:bg-zinc-900;
+  @apply font-semibold;
+}
+
+/* Стили для разных режимов просмотра */
+.post.cozy h1 {
+  @apply text-xl mb-3;
+}
+
+.post.compact h1 {
+  @apply text-lg mb-2;
+}
+
+/* Адаптивные стили */
+@media (max-width: 640px) {
+  .post h1 {
+    @apply text-xl mb-3;
+  }
+  
+  .post h2 {
+    @apply text-lg mb-2;
+  }
+
+  .post h3 {
+    @apply text-base mb-1; /* Адаптивный размер для мобилок */
+  }
+}
+
+/* Добавьте эти стили для улучшения внешнего вида навбара */
+@layer components {
+  .navbar-search {
+    @apply w-full h-10 rounded-full flex items-center gap-2 px-4 
+           bg-slate-100 dark:bg-zinc-900 
+           hover:bg-slate-200 dark:hover:bg-zinc-800 
+           transition-colors text-slate-600 dark:text-zinc-400;
+  }
+
+  .navbar-button {
+    @apply w-12 h-12 rounded-full flex items-center justify-center 
+           hover:bg-slate-100 dark:hover:bg-zinc-800 
+           transition-colors
+           md:w-10 md:h-10;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  text-decoration: none;
+}
+
+.dark .btn-primary {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.dark .btn-primary:hover {
+  background-color: #2563eb;
+}
+
+/* Стили для жирного текста в постах */
+.post strong, .post b {
+  font-weight: 500;
+}

@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "communities": "Сообщества",
+    "popular_communities": "Популярные сообщества",
+    "show_all": "Показать все"
+  },
+  "routes": {
+    "search": {
+      "other": "Другие сообщества",
+      "top": "Топ сообществ",
+      "noResults": {
+        "title": "Ничего не найдено",
+        "description": "Попробуйте изменить параметры поиска"
+      },
+      "query": "Поиск"
+    },
+    "communities": {
+      "title": "Сообщества",
+      "search": {
+        "placeholder": "Поиск сообществ..."
+      }
+    }
+  }
+} 
