@@ -53,9 +53,9 @@
     </div>
   </div>
 
-  <div class="p-4 flex flex-col gap-2">
-    <div class="flex-1 flex flex-row items-center text-left gap-8">
-      <div class="w-24 flex-shrink-0"></div>
+  <div class="p-4 pt-16 sm:pt-4 flex flex-col gap-2">
+    <div class="flex-1 flex flex-row items-center text-left gap-0 sm:gap-8">
+      <div class="hidden sm:block w-24 flex-shrink-0"></div>
       <div class="flex flex-col min-w-0 flex-1">
         <svelte:element
           this={url ? 'a' : 'span'}
@@ -75,8 +75,8 @@
     </div>
 
     <!-- Описание сообщества -->
-    <div class="flex-1 flex flex-row items-center text-left gap-8">
-      <div class="w-24 flex-shrink-0"></div>
+    <div class="flex-1 flex flex-row items-center text-left gap-0 sm:gap-8">
+      <div class="hidden sm:block w-24 flex-shrink-0"></div>
       <div class="flex flex-col">
         {#if bio}
           <div class="relative max-w-full w-full">
