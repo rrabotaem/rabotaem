@@ -579,6 +579,7 @@
         jwt={$profile?.jwt}
         listing_type="All"
         label={$t('form.post.community')}
+        placeholder="Выберите сообщество"
         required
         on:select={(e) => {
           const c = e.detail
@@ -628,6 +629,25 @@
     title="Заголовок не должен превышать 200 символов"
     class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 text-sm overflow-hidden resize-none"
   />
+  <!-- Блок-подсказка по редактору сразу под заголовком -->
+  <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-zinc-900/60 border border-dashed border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1.5">
+    <span class="font-medium text-slate-800 dark:text-slate-100">
+      Как пользоваться редактором
+    </span>
+    <p class="leading-snug">
+      У нас мощный визуальный редактор: поддерживает заголовки, кнопки, галереи, видео и многое другое.
+      Посмотрите короткую инструкцию, чтобы быстро разобратьcя с возможностями и оформить текст как в лучших медиа.
+    </p>
+    <a
+      href="https://rabotaem.app/post/331-instruktsiya-po-redaktoru-rabotaem"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline underline-offset-2 decoration-orange-400/70"
+    >
+      Открыть инструкцию по редактору в новой вкладке
+      <span aria-hidden="true">↗</span>
+    </a>
+  </div>
   {#if isJsonContent}
     <EditorJS
       label={$t('form.post.body')}

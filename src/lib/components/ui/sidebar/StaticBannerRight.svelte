@@ -1,7 +1,8 @@
 <script lang="ts">
   export let imageSrc: string = '/img/planerka.webp'
   export let imageAlt: string = 'Banner'
-  export let linkHref: string = 'https://planerka.app'
+  export let linkHref: string =
+    'https://planerka.app/?utm_source=rabotaem&utm_medium=banner&utm_campaign=sidebar_right'
 </script>
 
 <a

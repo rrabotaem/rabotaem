@@ -857,22 +857,49 @@
     
     // Сначала берем локальные посты из сообщества
     const communityPostsFiltered = (data.recommendations.communityPosts?.posts || [])
-      .filter(p => 
+      .filter((p) => 
         p.post.id !== currentPostId && 
-        p.post.local // Добавляем проверку на локальность
+        p.post.local
       )
     
     // Затем добавляем локальные глобальные посты
     const globalPostsFiltered = (data.recommendations.globalPosts?.posts?.posts || [])
-      .filter(p => 
+      .filter((p) => 
         p.post.id !== currentPostId && 
-        !communityPostsFiltered.some(cp => cp.post.id === p.post.id) &&
+        !communityPostsFiltered.some((cp) => cp.post.id === p.post.id) &&
         p.community.id !== data.post.post_view.community.id &&
-        p.post.local // Добавляем проверку на локальность
+        p.post.local
       )
     
     // Объединяем массивы
     return [...communityPostsFiltered, ...globalPostsFiltered]
+  })()
+
+  // Случайный рекламный пост (если есть в ENV)
+  $: adPost = (() => {
+    if (!data.recommendations?.adPosts?.length) return null
+
+    const currentPostId = data.post.post_view.post.id
+
+    const validAds = data.recommendations.adPosts
+      .filter((p) => p.post.id !== currentPostId && p.post.local)
+
+    if (!validAds.length) return null
+
+    const randomIndex = Math.floor(Math.random() * validAds.length)
+    return validAds[randomIndex]
+  })()
+
+  // Итоговая лента: рекламный пост (если есть) + похожие посты без дублей
+  $: finalPosts = (() => {
+    if (!combinedPosts || !combinedPosts.length) return combinedPosts
+    if (!adPost) return combinedPosts
+
+    const filteredCombined = combinedPosts.filter(
+      (p) => p.post.id !== adPost.post.id
+    )
+
+    return [adPost, ...filteredCombined]
   })()
 
   function getMetaTitle(post: any): string {
@@ -975,7 +1002,7 @@
   // Исправляем тип данных для feedData
   $: feedDataForComponent = {
     posts: {
-      posts: combinedPosts
+      posts: finalPosts
     },
     cursor: { next: undefined },
     sort: 'Hot' as const
@@ -1288,12 +1315,6 @@
 {/if}
 
 <section class="mt-4 flex flex-col gap-2 max-w-[640px] w-full mx-auto s-5pF0786g8dBR" id="recomendations">
-  <header class="flex items-center gap-2">
-    <div class="text-lg font-bold font-display">
-      {$t('routes.post.similarPosts')}
-    </div>
-  </header>
-
   {#if !data.recommendations}
     <div class="space-y-4">
       {#each Array(3) as _}
@@ -1308,7 +1329,7 @@
     <div class="flex flex-col gap-4">
       <svelte:component
         this={browser ? VirtualFeed : PostFeed}
-        posts={combinedPosts}
+        posts={finalPosts}
         feedData={feedDataForComponent}
         feedId="recommendations"
       />

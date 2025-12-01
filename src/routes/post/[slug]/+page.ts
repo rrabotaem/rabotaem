@@ -83,6 +83,27 @@ export async function load({ params, url, fetch }) {
     fetch: fetch
   })
 
+  // Рекламные посты из ENV (PUBLIC_AD_POST_IDS=123,456,789)
+  const adPostIds = (env.PUBLIC_AD_POST_IDS ?? '')
+    .split(',')
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0)
+    .map((id) => Number(id))
+    .filter((id) => Number.isInteger(id) && id > 0)
+
+  const adPosts = adPostIds.length
+    ? await Promise.all(
+        adPostIds.map(async (id) => {
+          try {
+            const res = await getClient(env.PUBLIC_INSTANCE_URL).getPost({ id })
+            return res.post_view
+          } catch {
+            return null
+          }
+        })
+      ).then((views) => views.filter((v) => v !== null))
+    : []
+
   return {
     thread: {
       showContext: showContext,
@@ -103,7 +124,8 @@ export async function load({ params, url, fetch }) {
     },
     recommendations: {
       communityPosts,
-      globalPosts
+      globalPosts,
+      adPosts
     }
   }
 }
