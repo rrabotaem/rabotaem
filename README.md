@@ -83,7 +83,8 @@ Photon is a modern client for the Fediverse, written in Svelte. This fork was cr
 
 ## License
 
-This project is licensed under **AGPL-3.0**. For more details, see the [LICENSE](./LICENSE) file.
+This project is licensed under **AGPL-3.0**.  
+For more details, see the [LICENSE](./LICENSE) file.
 
 
 # Build and Deploy

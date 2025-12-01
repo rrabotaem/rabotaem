@@ -32,9 +32,10 @@
   import { LINKED_INSTANCE_URL } from '$lib/instance'
   import { locale } from '$lib/translations'
   import { getDefaultColors } from '$lib/ui/presets'
-  import YandexMetrika from '$lib/components/YandexMetrika.svelte'
-  import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte'
-  import PopularPosts from '$lib/components/ui/sidebar/PopularPosts.svelte'
+import YandexMetrika from '$lib/components/YandexMetrika.svelte'
+import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte'
+import PopularPosts from '$lib/components/ui/sidebar/PopularPosts.svelte'
+import StaticBannerRight from '$lib/components/ui/sidebar/StaticBannerRight.svelte'
 
   nProgress.configure({
     minimum: 0.4,
@@ -184,23 +185,30 @@
     class="{c} {isPostFormRoute ? 'hidden' : ''}"
     style={s}
   >
-    <!-- Контейнер с прокруткой для всего содержимого -->
-    <div class="flex flex-col gap-4 h-[calc(100vh-4rem)] overflow-auto sticky top-16 p-4 hover:scrollbar scrollbar-hidden">
-      <!-- CommunityCard или SiteCard -->
-      {#if $page.route.id?.startsWith('/c/') || $page.route.id?.startsWith('/post/')}
-        <div class="flex-shrink-0">
-          {#if $page.data.slots?.sidebar?.component}
-            <svelte:component
-              this={$page.data.slots.sidebar.component}
-              {...$page.data.slots.sidebar.props}
-            />
-          {/if}
+    <div class="flex flex-col gap-4 h-[calc(100vh-4rem)] sticky top-16 p-4">
+      <!-- Статичный баннер над правым сайдбаром -->
+      <div class="flex-shrink-0">
+        <StaticBannerRight />
+      </div>
+
+      <!-- Прокручиваемый контент сайдбара -->
+      <div class="flex flex-col gap-4 flex-1 min-h-0 overflow-auto hover:scrollbar scrollbar-hidden">
+        <!-- CommunityCard или SiteCard -->
+        {#if $page.route.id?.startsWith('/c/') || $page.route.id?.startsWith('/post/')}
+          <div class="flex-shrink-0">
+            {#if $page.data.slots?.sidebar?.component}
+              <svelte:component
+                this={$page.data.slots.sidebar.component}
+                {...$page.data.slots.sidebar.props}
+              />
+            {/if}
+          </div>
+        {/if}
+        
+        <!-- PopularPosts -->
+        <div class="flex-1 min-h-0">
+          <PopularPosts />
         </div>
-      {/if}
-      
-      <!-- PopularPosts -->
-      <div class="flex-1 min-h-0">
-        <PopularPosts />
       </div>
     </div>
   </div>

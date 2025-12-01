@@ -26,10 +26,10 @@ stages:
   - sync
 
 services:
-  - mirror.gcr.io/docker:dind
+  - docker:28.5.2-dind
 
 image: 
-  name: docker:latest
+  name: docker:28.5.2-dind
 
 
 build-dev-app:
