@@ -639,7 +639,7 @@
       Посмотрите короткую инструкцию, чтобы быстро разобратьcя с возможностями и оформить текст как в лучших медиа.
     </p>
     <a
-      href="https://rabotaem.app/post/331-instruktsiya-po-redaktoru-rabotaem"
+      href="https://rabotaem.app/post/746-kak-pravilno-verstat-stati-v-redaktore-instruktsiya"
       target="_blank"
       rel="noopener noreferrer"
       class="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 underline underline-offset-2 decoration-orange-400/70"

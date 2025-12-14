@@ -875,31 +875,47 @@
     return [...communityPostsFiltered, ...globalPostsFiltered]
   })()
 
-  // Случайный рекламный пост (если есть в ENV)
-  $: adPost = (() => {
-    if (!data.recommendations?.adPosts?.length) return null
+  // Рекламные посты (если есть в ENV)
+  $: adPosts = (() => {
+    if (!data.recommendations?.adPosts?.length) return []
 
     const currentPostId = data.post.post_view.post.id
 
-    const validAds = data.recommendations.adPosts
+    return data.recommendations.adPosts
       .filter((p) => p.post.id !== currentPostId && p.post.local)
-
-    if (!validAds.length) return null
-
-    const randomIndex = Math.floor(Math.random() * validAds.length)
-    return validAds[randomIndex]
   })()
 
-  // Итоговая лента: рекламный пост (если есть) + похожие посты без дублей
+  // Итоговая лента: рекламные посты, чередующиеся с похожими постами
   $: finalPosts = (() => {
-    if (!combinedPosts || !combinedPosts.length) return combinedPosts
-    if (!adPost) return combinedPosts
+    const hasCombined = combinedPosts && combinedPosts.length
+    const hasAds = adPosts && adPosts.length
+
+    if (!hasCombined && !hasAds) return []
+    if (!hasCombined && hasAds) return adPosts
+    if (hasCombined && !hasAds) return combinedPosts
 
     const filteredCombined = combinedPosts.filter(
-      (p) => p.post.id !== adPost.post.id
+      (p) => !adPosts.some((ad) => ad.post.id === p.post.id)
     )
 
-    return [adPost, ...filteredCombined]
+    const result: typeof combinedPosts = []
+    let adIndex = 0
+    let postIndex = 0
+
+    // Чередуем: реклама -> похожий пост -> реклама -> похожий пост ...
+    while (adIndex < adPosts.length || postIndex < filteredCombined.length) {
+      if (adIndex < adPosts.length) {
+        result.push(adPosts[adIndex])
+        adIndex += 1
+      }
+
+      if (postIndex < filteredCombined.length) {
+        result.push(filteredCombined[postIndex])
+        postIndex += 1
+      }
+    }
+
+    return result
   })()
 
   function getMetaTitle(post: any): string {
@@ -1599,6 +1615,10 @@
   /* Стили для параграфов в полном просмотре поста */
   :global(.post-content p) {
     margin: 1rem 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
   }
 
   /* Стили для жирного текста */

@@ -542,6 +542,10 @@ ${view == 'list' ? `max-h-24` : 'max-h-48'}`
   /* Стили для параграфов в PostBody */
   :global(.post-content p) {
     margin: 1rem 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
   }
 
   :global(.post-content blockquote footer) {

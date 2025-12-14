@@ -1783,6 +1783,28 @@
   </div>
   {/if}
   
+  <!-- Информационный блок об обложке поста -->
+  <div class="mt-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-zinc-900/60 border border-dashed border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3">
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start">
+      <div class="flex-1 flex flex-col gap-1.5">
+        <span class="font-medium text-slate-800 dark:text-slate-100">
+          Обложка поста
+        </span>
+        <p class="leading-snug">
+          Хороший пост должен быть с обложкой. Выберите любое изображение в статье и кликните - <strong>вывести в ленте</strong>. Тогда выбранное изображение появится в ленте постов, и ваш пост станет гораздо более кликабельным.
+        </p>
+      </div>
+      <div class="flex-shrink-0 w-full sm:w-auto sm:max-w-[300px]">
+        <img
+          src="/img/oblozhka.webp"
+          alt="Демонстрация создания обложки поста"
+          class="w-full sm:w-[300px] rounded-lg border border-slate-200 dark:border-zinc-700"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </div>
+  
   <div class="mt-4 space-y-4">
     <div class="flex flex-col gap-1">
       <div class="flex items-center justify-between">

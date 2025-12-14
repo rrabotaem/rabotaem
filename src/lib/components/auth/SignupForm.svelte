@@ -234,10 +234,4 @@
   >
     {$t('account.signup')}
   </Button>
-</form>
-
-<h2 
-  class="text-xl font-roboto font-medium"
->
-  {$t('auth.signup')}
-</h2> 
+</form> 
