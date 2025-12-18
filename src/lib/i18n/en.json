@@ -196,7 +196,10 @@
         },
         "description": "Description",
         "error": {
-            "sidebarTooShort": "Sidebar text must contain at least 3 words"
+            "sidebarTooShort": "Sidebar text must contain at least 3 words",
+            "communityNameRequired": "Enter a community name",
+            "communityDisplayNameRequired": "Enter a community display name",
+            "communityNameTooLong": "Community name cannot be longer than 20 characters"
         }
     },
     "routes": {

@@ -30,6 +30,8 @@
   export let disabled: boolean = false
   export let rows: number = 2
   export let autoFocus: boolean = false
+  export let showFooter: boolean = true
+  export let helperText: string | undefined = undefined
 
   export let beforePreview: (input: string) => string = (input) => input
 
@@ -126,6 +128,11 @@
         <slot name="label" />
       {/if}
     </Label>
+  {/if}
+  {#if helperText}
+    <p class="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+      {helperText}
+    </p>
   {/if}
   <div
     class="flex flex-col border border-slate-200 border-b-slate-300 dark:border-t-zinc-700/70 dark:border-zinc-800
@@ -275,23 +282,25 @@ overflow-hidden transition-colors {$$props.class}"
       />
     {/if}
 
-    {#if previewButton}
-      <div
-        class="p-2 flex flex-row items-center w-full bg-white dark:bg-zinc-950 gap-1"
-      >
-        <MultiSelect
-          bind:selected={previewing}
-          options={[false, true]}
-          optionNames={[$t('form.edit'), $t('form.preview')]}
-        />
-        <slot />
-      </div>
-    {:else}
-      <div
-        class="p-2 flex flex-row items-center w-full bg-white dark:bg-zinc-950 gap-1"
-      >
-        <slot name="actions" />
-      </div>
+    {#if showFooter}
+      {#if previewButton}
+        <div
+          class="p-2 flex flex-row items-center w-full bg-white dark:bg-zinc-950 gap-1"
+        >
+          <MultiSelect
+            bind:selected={previewing}
+            options={[false, true]}
+            optionNames={[$t('form.edit'), $t('form.preview')]}
+          />
+          <slot />
+        </div>
+      {:else}
+        <div
+          class="p-2 flex flex-row items-center w-full bg-white dark:bg-zinc-950 gap-1"
+        >
+          <slot name="actions" />
+        </div>
+      {/if}
     {/if}
   </div>
 </div>

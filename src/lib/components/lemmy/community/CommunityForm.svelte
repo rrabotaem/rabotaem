@@ -20,6 +20,11 @@
    */
   export let edit: number | undefined = undefined
 
+  const COMMUNITY_NAME_MAX_LENGTH = 20
+
+  let communityNameError: string | undefined = undefined
+  let communityNameInput: HTMLInputElement | undefined = undefined
+
   export let formData: {
     name: string
     displayName: string
@@ -82,7 +87,52 @@
 
   async function submit() {
     if (!$profile?.jwt) return
-    if ((!edit && formData.name == '') || formData.displayName == '') return
+
+    if (!edit && formData.name.trim() === '') {
+      communityNameError =
+        $t('form.error.communityNameRequired') ||
+        'Введите имя сообщества'
+      communityNameInput?.setCustomValidity(
+        communityNameError ??
+          'Введите имя сообщества'
+      )
+      communityNameInput?.reportValidity()
+      toast({
+        content: communityNameError ?? 'Введите имя сообщества',
+        type: 'error',
+      })
+      return
+    }
+
+    if (formData.displayName.trim() === '') {
+      toast({
+        content:
+          $t('form.error.communityDisplayNameRequired') ||
+          'Введите отображаемое имя сообщества',
+        type: 'error',
+      })
+      return
+    }
+    if (formData.name.trim().length > COMMUNITY_NAME_MAX_LENGTH) {
+      communityNameError =
+        $t('form.error.communityNameTooLong') ||
+        `Имя сообщества не может быть длиннее ${COMMUNITY_NAME_MAX_LENGTH} символов`
+      communityNameInput?.setCustomValidity(
+        communityNameError ??
+          `Имя сообщества не может быть длиннее ${COMMUNITY_NAME_MAX_LENGTH} символов`
+      )
+      communityNameInput?.reportValidity()
+      toast({
+        content:
+          communityNameError ??
+          `Имя сообщества не может быть длиннее ${COMMUNITY_NAME_MAX_LENGTH} символов`,
+        type: 'error',
+      })
+      return
+    }
+
+    communityNameError = undefined
+    communityNameInput?.setCustomValidity('')
     
     // Добавляем валидацию sidebar
     if (!validateSidebar(formData.sidebar)) {
@@ -183,9 +233,24 @@
     required
     label={$t('form.profile.communityDisplayName')}
     bind:value={formData.displayName}
-    on:input={handleDisplayNameChange}
-    placeholder="Например: Планёрка"
+    bind:element={communityNameInput}
+    on:input={() => {
+      communityNameError = undefined
+      communityNameInput?.setCustomValidity('')
+      handleDisplayNameChange()
+    }}
+    class="w-full"
+    placeholder="Хорошее имя сообщества - уместите в пару слов, не используйте спецсимволы и цифры"
   />
+  <p class="text-xs text-slate-500 dark:text-zinc-400">
+    Длина имени сообщества не может быть длиннее {COMMUNITY_NAME_MAX_LENGTH} латинских символов. Сейчас: {formData.name.length}/
+    {COMMUNITY_NAME_MAX_LENGTH}.
+  </p>
+  {#if formData.name.trim().length > COMMUNITY_NAME_MAX_LENGTH}
+    <p class="text-xs text-red-500">
+      Имя слишком длинное — укоротите его, чтобы создать сообщество.
+    </p>
+  {/if}
   <div class="flex flex-row gap-4 flex-wrap *:flex-1">
     <div class="flex flex-col gap-1">
       <Label>{$t('routes.admin.config.icon')}</Label>
@@ -259,11 +324,12 @@
   </div>
   <MarkdownEditor
     previewButton
+    showFooter={false}
     label={$t('routes.admin.config.sidebar')}
     bind:value={formData.sidebar}
     required={true}
     class="relative"
-    helperText="Минимум 3 слова"
+    helperText="Кратко опишите, о чём это сообщество, чем оно полезно и какие темы здесь обсуждают. Этот текст будет виден на странице сообщества. Минимум 3 слова."
     error={formData.sidebar && !validateSidebar(formData.sidebar) 
       ? 'Текст должен содержать минимум 3 слова' 
       : undefined}
