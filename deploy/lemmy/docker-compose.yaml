@@ -1,0 +1,75 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "4"
+
+services:
+
+  lemmy:
+    image: dessalines/lemmy:0.19.10
+    hostname: lemmy
+    restart: always
+    logging: *default-logging
+    environment:
+      - RUST_LOG="warn"
+      - DOMAIN="localhost:8536"
+      - POSTGRES_PASSWORD=strong_pg_password
+    volumes:
+      - ./lemmy.hjson:/config/config.hjson:Z
+    ports:
+      - "8536:8536"
+    depends_on:
+      - postgres
+      - pictrs
+    networks:
+      - lemmy-network
+      - proxy-net
+
+
+  pictrs:
+    image: asonix/pictrs:0.5.16
+    # this needs to match the pictrs url in lemmy.hjson
+    hostname: pictrs
+    # we can set options to pictrs like this, here we set max. image size and forced format for conversion
+    # entrypoint: /sbin/tini -- /usr/local/bin/pict-rs -p /mnt -m 4 --image-format webp
+    environment:
+      # - PICTRS_OPENTELEMETRY_URL=http://otel:4137
+      - PICTRS__SERVER__API_KEY="strong_pictrs_password"
+      - RUST_BACKTRACE=full
+      - PICTRS__MEDIA__VIDEO__VIDEO_CODEC=vp9
+      - PICTRS__MEDIA__ANIMATION__MAX_WIDTH=256
+      - PICTRS__MEDIA__ANIMATION__MAX_HEIGHT=256
+      - PICTRS__MEDIA__ANIMATION__MAX_FRAME_COUNT=400
+    user: 991:991
+    volumes:
+      - ./volumes/pictrs:/mnt:Z
+    restart: always
+    logging: *default-logging
+    networks:
+      - lemmy-network
+
+  postgres:
+    image: postgres:17.2
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=lemmy
+      - POSTGRES_PASSWORD=strong_pg_password
+      - POSTGRES_DB=lemmy
+    shm_size: 1g
+    ports:
+      - "127.0.0.1:5439:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data:Z
+    restart: always
+    logging: *default-logging
+    networks:
+      - lemmy-network
+
+
+networks:
+  lemmy-network:
+    driver: bridge
+  proxy-net:
+    external: true
+    name: proxynet

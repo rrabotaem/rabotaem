@@ -1,0 +1,8 @@
+http:
+  routers:
+    dashboard:
+      rule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+      entrypoints:
+      - https-service
+      tls: {}
+      service: api@internal

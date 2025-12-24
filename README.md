@@ -1,3 +1,14 @@
+
+<p align="center">
+  <a href="https://rabotaem.app/" rel="noopener">
+  <img width=200px height=200px src="https://raw.githubusercontent.com/rrabotaem/rabotaem/main/static/rabotaem_logo.svg"></a>
+
+
+ <h1 align="center"><a href="https://rabotaem.app/">Работаем</a></h1>
+ </p>
+
+[Инструкция по установке (на русском языке)](deploy/README.md)
+
 ### Configuring default settings
 
 The most common settings you'll use are `PUBLIC_INSTANCE_URL`. Some selfhosters with `PUBLIC_SSR_ENABLED` set to true might want the instance url to be different for the server. You can use the `PUBLIC_INTERNAL_INSTANCE` variable for that.

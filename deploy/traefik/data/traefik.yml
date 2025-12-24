@@ -1,0 +1,52 @@
+api:
+  dashboard: true
+
+entryPoints:
+  http:
+    address: "0.0.0.0:80"
+    transport:
+      lifeCycle:
+        requestAcceptGraceTimeout: 10
+        graceTimeOut: 10
+      respondingTimeouts:
+        readTimeout: 2
+        writeTimeout: 2
+        idleTimeout: 2
+
+  https:
+    address: "0.0.0.0:443"
+    transport:
+      lifeCycle:
+        requestAcceptGraceTimeout: 30
+        graceTimeOut: 30
+      respondingTimeouts:
+        readTimeout: 3600
+        writeTimeout: 3600
+        idleTimeout: 60
+    http:
+      tls: {}
+
+  https-service:
+    address: ":6688"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    directory: /custom
+    watch: true
+
+#accessLog: 
+#  filePath: "/var/log/traefik/access.log"
+#  format: json
+
+metrics:
+  prometheus: {}
+
+certificatesResolvers:
+  letsEncrypt:
+    acme:
+      storage: /acme.json
+#      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      tlsChallenge: {}

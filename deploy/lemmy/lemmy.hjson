@@ -1,0 +1,38 @@
+{
+  # for more info about the config, check out the documentation
+  # https://join-lemmy.org/docs/en/administration/configuration.html
+
+  database: {
+    #host: postgres
+    #password: strong_pg_password
+    # Alternative way:
+    uri: "postgresql://lemmy:strong_pg_password@postgres/lemmy"
+  }
+  hostname: "example.com"
+  pictrs: {
+    url: "http://pictrs:8080/"
+    api_key: strong_pictrs_token
+  }
+#  email: {
+#    smtp_server: "postfix:25"
+#    smtp_from_address: "noreply@{{ domain }}"
+#    tls_type: "none"
+#  }
+  setup: {
+    # Username for the admin user
+    admin_username: "admin"
+    # Password for the admin user. It must be at least 10 characters.
+    admin_password: "strong_admin_password"
+    # Name of the site (can be changed later)
+    site_name: "example.com"
+    # Email for the admin user (optional, can be omitted and set later through the website)
+    admin_email: "admin@example.com"
+  }
+  email: {
+   smtp_server: "smtp.mail.ru:465"
+   smtp_login: "smtp_login"
+   smtp_password: "smtp_password"
+   smtp_from_address: "noreply@example.com"
+   tls_type: "tls"
+  }
+}

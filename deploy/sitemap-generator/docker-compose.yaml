@@ -1,0 +1,9 @@
+services:
+  sheduler:
+    build: .
+    restart: always
+    environment:
+      - SITEMAP_LOCATION=/static
+    volumes:
+      - /opt/photon/static:/static
+

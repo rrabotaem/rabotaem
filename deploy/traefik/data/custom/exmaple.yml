@@ -1,0 +1,88 @@
+http:
+  routers:
+    lemmy:
+      entrypoints:
+      - https
+      rule: >
+        Host(`example.com`) &&
+        (
+          PathPrefix(`/api`) ||
+          PathPrefix(`/pictrs`) ||
+          PathPrefix(`/feeds`) ||
+          PathPrefix(`/nodeinfo`) ||
+          PathPrefix(`/.well-known`) )
+      tls: 
+        certResolver: letsEncrypt
+      middlewares:
+      - x-service-mark-lemmy
+      service: "lemmy"
+    
+    lemmy-apub:
+      entrypoints:
+      - https
+      rule: >
+        Host(`example.com`) &&
+        (
+          PathPrefix(`/`) &&
+          (
+            Header(`Accept`, `application/activity+json`) ||
+            HeaderRegexp(`Accept`, `^application/ld\+json(;.*)?$`) ||
+            Header(`Accept`, `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`) ||
+            Method(`POST`) ) )
+
+      tls: 
+        certResolver: letsEncrypt
+      middlewares:
+      - x-service-mark-lemmy
+      service: "lemmy"
+
+
+    photon:
+      rule: "Host(`example.com`)"
+      entrypoints:
+      - https
+      middlewares:
+      - x-service-mark-photon
+      service: "photon"
+
+    photon-static:
+      rule: "Host(`example.com`) && ( PathPrefix(`/font/`) || PathPrefix(`/img/`) || PathPrefix(`/_app/immutable/`) )"
+      entrypoints:
+        - https
+      tls: 
+        certResolver: letsEncrypt
+      middlewares:
+        - http-compress
+        - static-cache-30d
+      service: "photon"
+
+
+  middlewares:
+    x-service-mark-lemmy:
+      headers:
+        customResponseHeaders:
+          X-Service-Mark: "Lemmy"   # 30 дней
+    x-service-mark-photon:
+      headers:
+        customResponseHeaders:
+          X-Service-Mark: "Photon"   # 30 дней
+
+    static-cache-30d:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=2592000, immutable"   # 30 дней
+
+    http-compress:
+      compress: {}
+
+      
+  services:
+    lemmy:
+      loadBalancer:
+        servers:
+        - url: "http://lemmy-lemmy-1:8536/"
+        
+    photon:
+      loadBalancer:
+        servers:
+        - url: "http://photon-photon-1:3000/"
