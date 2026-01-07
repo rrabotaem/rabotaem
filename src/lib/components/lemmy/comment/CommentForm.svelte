@@ -16,7 +16,7 @@
   export let parentId: number | undefined = undefined
   export let locked: boolean = false
   export let banned: boolean = false
-  export let rows: number = 7
+  export let rows: number = 3
   export let placeholder: string | undefined = undefined
   export let postTitle: string | undefined = undefined
   export let value = ''
@@ -100,7 +100,7 @@
     previewButton={false}
     tools={true}
   >
-    <div slot="actions" class="p-2 flex flex-row items-center w-full bg-white dark:bg-zinc-950 gap-1">
+    <div slot="actions" class="flex flex-row items-center w-full bg-white dark:bg-zinc-950 gap-1">
       <div class="flex-1"></div>
       {#if actions}
         <Button

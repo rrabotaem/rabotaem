@@ -1221,14 +1221,6 @@
 {/if}
 {#if !data.post.post_view.post.locked}
 <section class="mt-4 flex flex-col gap-2 max-w-[640px] w-full mx-auto bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 border-b-slate-300 dark:border-t-zinc-700 p-4 sm:p-6" id="comments">
-  <header>
-    <div class="text-base">
-      <span class="font-bold">
-        <FormattedNumber number={data.post.post_view.counts.comments} />
-      </span>
-      {$t('routes.post.commentCount')}
-    </div>
-  </header>
   {#await data.comments}
     <div class="space-y-4">
       {#each new Array(10) as empty}
@@ -1270,24 +1262,26 @@
       on:focus={() => (commenting = true)}
       tools={true}
       preview={true}
-      rows={7}
+      rows={5}
       placeholder={$t('routes.post.addComment')}
     />
 
-    <div class="gap-2 flex items-center max-w-[640px]">
-      <Select bind:value={commentSort} on:change={reloadComments}>
-        <option value="Hot">{$t('filter.sort.hot')}</option>
-        <option value="Top">{$t('filter.sort.top.label')}</option>
-        <option value="New">{$t('filter.sort.new')}</option>
-        <option value="Old">{$t('filter.sort.old')}</option>
-        <option value="Controversial">
-          {$t('filter.sort.controversial')}
-        </option>
-      </Select>
-      <Button size="square-md" on:click={reloadComments}>
-        <Icon src={ArrowPath} size="16" mini slot="prefix" />
-      </Button>
-    </div>
+    {#if comments.comments.length > 0}
+      <div class="gap-2 flex items-center max-w-[640px]">
+        <Select bind:value={commentSort} on:change={reloadComments}>
+          <option value="Hot">{$t('filter.sort.hot')}</option>
+          <option value="Top">{$t('filter.sort.top.label')}</option>
+          <option value="New">{$t('filter.sort.new')}</option>
+          <option value="Old">{$t('filter.sort.old')}</option>
+          <option value="Controversial">
+            {$t('filter.sort.controversial')}
+          </option>
+        </Select>
+        <Button size="square-md" on:click={reloadComments}>
+          <Icon src={ArrowPath} size="16" mini slot="prefix" />
+        </Button>
+      </div>
+    {/if}
     <CommentListVirtualizer
       post={data.post.post_view.post}
       nodes={buildCommentsTree(
