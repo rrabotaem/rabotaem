@@ -94,7 +94,7 @@
     type="button"
     class="{canUseContents
       ? 'contents text-left'
-      : 'w-max h-max'} {$$props.class}"
+      : 'w-max h-max'} {$$props.class || ''}"
     bind:this={el}
     use:customFloatingRef
   >

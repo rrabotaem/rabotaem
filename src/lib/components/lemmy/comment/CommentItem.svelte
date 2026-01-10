@@ -28,7 +28,7 @@
 </script>
 
 <Material
-  class="flex flex-col flex-1 {view != 'card'
+  class="flex flex-col flex-1 w-full {view != 'card'
     ? '!bg-transparent !border-0 rounded-none'
     : 'p-5'} {view == 'list'
     ? 'py-3'
@@ -38,7 +38,7 @@
   color="distinct"
   padding="none"
 >
-  <div class="list-none">
+  <div class="list-none w-full">
     <Comment
       postId={post.id}
       postTitle={post.name}

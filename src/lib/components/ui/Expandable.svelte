@@ -7,7 +7,7 @@
 
 <Disclosure
   bind:open
-  class="items-start justify-items-start gap-2 {$$props.class}"
+  class="w-full items-start justify-items-start gap-2 {$$props.class || ''}"
 >
   <div
     slot="summary"
@@ -32,7 +32,7 @@
   </div>
   <slot name="extended" slot="extended" />
   <slot name="content">
-    <div class="pt-2 text-slate-900 dark:text-zinc-100">
+    <div class="w-full pt-2 text-slate-900 dark:text-zinc-100">
       <slot />
     </div>
   </slot>

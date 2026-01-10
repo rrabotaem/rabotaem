@@ -103,7 +103,7 @@
 <div
   class="{noStyle
     ? ''
-    : 'break-words flex flex-col gap-2 leading-[1.5]'} {$$props.class}"
+    : 'break-words flex flex-col gap-2 leading-[1.5]'} {$$props.class || ''}"
   style={$$props.style}
 >
   <SvelteMarkdown

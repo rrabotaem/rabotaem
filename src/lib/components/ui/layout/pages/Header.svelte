@@ -19,14 +19,11 @@
     : ''} {$$props.style};
 "
 >
-  <!--h1
-    class="text-3xl font-medium flex gap-2 w-full
-  {$userSettings.font == 'satoshi/nunito'
-      ? 'font-display'
-      : ''} {$$props.class ?? ''}"
-  >
-    <slot />
-  </h1-->
+  {#if $$slots.default}
+    <div class="w-full {$$props.class || ''}">
+      <slot />
+    </div>
+  {/if}
 
   {#if $$slots.extended}
     <div>

@@ -136,7 +136,7 @@
         community={false}
         view="cozy"
         meta={false}
-        class="pt-0 pb-0"
+        class=""
         onMarkAsRead={() => !item.read && markAsRead(true)}
       />
     {:else}
