@@ -29,6 +29,8 @@
   import Translation from '$lib/components/translate/Translation.svelte'
   import { text } from '$lib/components/translate/translation'
   import { userSettings } from '$lib/settings'
+  import { postLink } from '$lib/components/lemmy/post/helpers'
+  import { goto } from '$app/navigation'
 
   export let comment: CommentView
   export let replying: boolean = false
@@ -61,17 +63,18 @@
     rounding="pill"
     class="text-slate-700 dark:text-zinc-200"
     on:click={() => {
-      // Если мы в inbox, переходим к посту с reply параметром для автоответа
-      if (typeof window !== 'undefined' && window.location.pathname.includes('/inbox')) {
-        // Отмечаем комментарий прочитанным перед переходом
-        if (onMarkAsRead) {
-          onMarkAsRead();
-        }
-        window.location.href = `/post/${comment.post.id}?reply=true#${comment.comment.id}`;
-      } else {
-        // Обычное поведение для других страниц
-        replying = !replying;
+      // Отмечаем комментарий прочитанным перед переходом
+      if (onMarkAsRead) {
+        onMarkAsRead();
       }
+      
+      // Генерируем URL поста с параметрами thread и reply
+      const postUrl = postLink({ id: comment.post.id, name: comment.post.name })
+      const thread = comment.comment.path
+      const replyUrl = `${postUrl}?thread=${thread}&reply=true#${comment.comment.id}`
+      
+      // Переходим на страницу поста с параметрами для ответа
+      goto(replyUrl)
     }}
     disabled={comment.post.locked || disabled}
   >

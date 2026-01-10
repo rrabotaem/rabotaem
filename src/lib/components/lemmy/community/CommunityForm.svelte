@@ -310,18 +310,19 @@
     </div>
   </div>
   
-  <!-- Рекомендации по дизайну обложки -->
-  <div class="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg p-4">
-    <h3 class="text-sm font-medium text-slate-900 dark:text-zinc-100 mb-2">
-      Рекомендации для дизайна обложки сообщества:
-    </h3>
-    <ul class="text-xs text-slate-600 dark:text-zinc-400 space-y-1">
-      <li>• Минимальный размер: 640x192px</li>
-      <li>• Обложка всегда имеет фиксированную высоту 192px, но ширина адаптируется под размер экрана</li>
-      <li>• Рекомендуемое соотношение сторон: 3.33:1 или шире</li>
-      <li>• Формат: любой, будет конвертирован в WebP</li>
-    </ul>
-  </div>
+    <!-- Рекомендации по дизайну обложки -->
+    <div class="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg p-4">
+      <h3 class="text-sm font-medium text-slate-900 dark:text-zinc-100 mb-2">
+        Рекомендации для дизайна обложки сообщества:
+      </h3>
+      <ul class="text-xs text-slate-600 dark:text-zinc-400 space-y-1">
+        <li>• Точное соотношение сторон: <strong>3:1</strong> (обязательно для правильного отображения)</li>
+        <li>• Рекомендуемые размеры: 1200×400px, 1500×500px, 1800×600px</li>
+        <li>• Обложка отображается с фиксированными пропорциями на всех устройствах — высота автоматически рассчитывается</li>
+        <li>• Важные элементы размещайте по центру — края могут немного обрезаться при адаптации</li>
+        <li>• Формат: любой (JPG, PNG, WebP), будет автоматически конвертирован в WebP</li>
+      </ul>
+    </div>
   <MarkdownEditor
     previewButton
     showFooter={false}

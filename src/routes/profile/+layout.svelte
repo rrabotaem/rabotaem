@@ -31,10 +31,6 @@
       class="overflow-auto"
       routes={[
         {
-          href: '/profile',
-          name: $t('routes.profile.overview'),
-        },
-        {
           href: '/profile/user',
           name: $t('routes.profile.submissions'),
         },

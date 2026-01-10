@@ -10,7 +10,7 @@ export async function load({ url, fetch, parent }) {
     (url.searchParams.get('type') as 'comments' | 'posts' | 'all') || 'all'
   const sort: SortType = (url.searchParams.get('sort') as SortType) || 'New'
 
-  const { my_user } = await parent()
+  const { my_user, moderates } = await parent()
 
   const user = await getClient(undefined, fetch).getPersonDetails({
     limit: 20,
@@ -39,6 +39,8 @@ export async function load({ url, fetch, parent }) {
     type: type,
     page: page,
     sort: sort,
+    my_user: my_user,
+    moderates: moderates,
     user: {
       submissions: items,
       moderates: user.moderates,

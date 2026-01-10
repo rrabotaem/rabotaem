@@ -103,11 +103,21 @@
       <ImageInput label={$t('form.profile.avatar')} bind:files={profileImage} />
       <ImageInput label={$t('form.profile.banner')} bind:files={bannerImage} />
     </div>
-    <TextInput
-      label={$t('form.profile.matrix')}
-      bind:value={formData.matrix_user_id}
-      placeholder="@user:example.com"
-    />
+    
+    <!-- Рекомендации по формату обложки профиля -->
+    <div class="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg p-4">
+      <h3 class="text-sm font-medium text-slate-900 dark:text-zinc-100 mb-2">
+        Рекомендации для обложки профиля:
+      </h3>
+      <ul class="text-xs text-slate-600 dark:text-zinc-400 space-y-1">
+        <li>• Точное соотношение сторон: <strong>3:1</strong> (обязательно для правильного отображения)</li>
+        <li>• Рекомендуемые размеры: 1200×400px, 1500×500px, 1800×600px</li>
+        <li>• Обложка отображается с фиксированными пропорциями на всех устройствах — высота автоматически рассчитывается</li>
+        <li>• Важные элементы размещайте по центру — края могут немного обрезаться при адаптации</li>
+        <li>• Формат: любой (JPG, PNG, WebP), будет автоматически конвертирован в WebP</li>
+      </ul>
+    </div>
+    
     <Switch bind:checked={formData.show_nsfw}>
       {$t('form.profile.showNSFW')}
     </Switch>

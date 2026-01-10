@@ -23,7 +23,7 @@
 >
   <!-- Обертка для правильного позиционирования -->
   <div class="relative">
-    <div class="h-48 overflow-hidden rounded-t-xl">
+    <div class="w-full aspect-[3/1] overflow-hidden rounded-t-xl">
       {#if banner}
         <!-- Картинки разного разрешения для разных экранов -->
         <picture>
@@ -31,13 +31,13 @@
           <source srcset={optimizeImageURL(banner, 728)} media="(max-width: 1024px)" />
           <img
             src={optimizeImageURL(banner, 1024)}
-            class="w-full object-cover h-full"
+            class="w-full h-full object-cover"
             alt="Community banner"
           />
         </picture>
       {:else}
         <div 
-          class="w-full h-48" 
+          class="w-full h-full" 
           style="background-image: url('/img/communityBackground1.webp'); background-size: cover; background-position: center;"
         />
       {/if}

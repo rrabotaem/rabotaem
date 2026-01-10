@@ -31,10 +31,10 @@
   class="flex flex-col flex-1 {view != 'card'
     ? '!bg-transparent !border-0 rounded-none'
     : 'p-5'} {view == 'list'
-    ? 'py-5'
+    ? 'py-3'
     : view == 'compact'
       ? 'py-4'
-      : 'py-5'} {$$props.class}"
+      : 'py-3'} {$$props.class}"
   color="distinct"
   padding="none"
 >
@@ -45,6 +45,7 @@
       node={{ children: [], comment_view: comment, depth: 1, ui: { open: true } }}
       replying={false}
       {meta}
+      showPostInfo={true}
       {onMarkAsRead}
       {...$$restProps}
     />
