@@ -1,23 +1,6 @@
 <script lang="ts">
-  import Comment from '$lib/components/lemmy/comment/Comment.svelte'
-  import UserLink from '$lib/components/lemmy/user/UserLink.svelte'
   import { getClient } from '$lib/lemmy.js'
   import { notifications, profile } from '$lib/auth.js'
-  import {
-    ArrowUturnLeft,
-    ArrowUturnUp,
-    AtSymbol,
-    ChatBubbleOvalLeft,
-    Check,
-    Envelope,
-    Icon,
-    Eye,
-    EyeSlash,
-  } from 'svelte-hero-icons'
-  import { Material } from 'mono-svelte'
-  import PostMeta from '$lib/components/lemmy/post/PostMeta.svelte'
-  import SectionTitle from '$lib/components/ui/SectionTitle.svelte'
-  import { Button } from 'mono-svelte'
   import RelativeDate from '$lib/components/util/RelativeDate.svelte'
   import { publishedToDate } from '$lib/components/util/date.js'
   import type { InboxItem } from '$lib/lemmy/inbox.js'
@@ -73,86 +56,44 @@
   <PrivateMessageModal bind:open={replying} user={item.item.creator} />
 {/if}
 
-<Expandable open icon={false}>
-  <div class="flex flex-row gap-2 items-center w-full" slot="title">
-    <Avatar
-      url={item.creator.avatar}
-      circle={false}
-      width={28}
-      alt={item.creator.name}
-    />
-    <!-- <div class="rounded-full p-1 border border-slate-200 dark:border-zinc-800">
-      <Icon
-        src={item.type == 'comment_reply'
-          ? ChatBubbleOvalLeft
-          : item.type == 'private_message'
-            ? Envelope
-            : item.type == 'person_mention'
-              ? AtSymbol
-              : AtSymbol}
-        size="20"
-        mini
-        class="text-slate-600 dark:text-zinc-400"
+{#if item.type == 'comment_reply' || item.type == 'person_mention'}
+  <CommentItem
+    comment={item.item}
+    community={false}
+    meta={true}
+    onMarkAsRead={() => !item.read && markAsRead(true)}
+  />
+{:else if item.type == 'private_message'}
+  <Expandable open icon={false}>
+    <div class="flex flex-row gap-2 items-center w-full" slot="title">
+      <Avatar
+        url={item.creator.avatar}
+        circle={false}
+        width={28}
+        alt={item.creator.name}
       />
-    </div> -->
-    <div class="flex flex-col">
-      <div class="text-sm font-normal">
-        {#if item.type == 'comment_reply'}
-          {@html $t('routes.inbox.item.reply', {
-            // @ts-ignore
-            user: `<span class="font-medium">${item.creator.display_name || item.creator.name}</span>`,
-            post: `<span class="font-medium">${item.item.post.name}</span>`,
-          })}
-        {:else if item.type == 'person_mention'}
-          {@html $t('routes.inbox.item.mention', {
-            // @ts-ignore
-            user: `<span class="font-medium">${item.creator.display_name || item.creator.name}</span>`,
-            post: `<span class="font-medium">${item.item.post.name}</span>`,
-          })}
-        {:else if item.type == 'private_message'}
+      <div class="flex flex-col">
+        <div class="text-sm font-normal">
           {@html $t('routes.inbox.item.message', {
             // @ts-ignore
             user: `<span class="font-medium">${item.item.creator.display_name || item.item.creator.name}</span>`,
             recipient: `<span class="font-medium">${item.item.recipient.display_name || item.item.recipient.name}</span>`,
           })}
-        {/if}
+        </div>
+        <div class="text-xs text-slate-600 dark:text-zinc-400">
+          <RelativeDate date={publishedToDate(item.published)} />
+        </div>
       </div>
-      <div class="text-xs text-slate-600 dark:text-zinc-400">
-        <RelativeDate date={publishedToDate(item.published)} />
+      <div class="flex-1" />
+      <div class="flex gap-2 max-md:hidden flex-shrink-0">
+        
       </div>
     </div>
-    <div class="flex-1" />
-    <div class="flex gap-2 max-md:hidden flex-shrink-0">
-      
-    </div>
-  </div>
-  <div slot="extended" class="flex gap-2 w-full md:hidden mt-1">
+    <div slot="extended" class="flex gap-2 w-full md:hidden mt-1">
 
-  </div>
-  <svelte:fragment slot="content">
-    {#if item.type == 'comment_reply' || item.type == 'person_mention'}
-      <CommentItem
-        comment={item.item}
-        community={false}
-        view="cozy"
-        meta={false}
-        class=""
-        onMarkAsRead={() => !item.read && markAsRead(true)}
-      />
-    {:else}
+    </div>
+    <svelte:fragment slot="content">
       <PrivateMessage message={item.item} meta={false} />
-    {/if}
-  </svelte:fragment>
-</Expandable>
-
-<style>
-  .meta {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto 1fr;
-    column-gap: 0.5rem;
-    grid-template-areas:
-      'a b     actions'
-      'a title actions';
-  }
-</style>
+    </svelte:fragment>
+  </Expandable>
+{/if}

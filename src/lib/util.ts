@@ -199,6 +199,96 @@ export async function uploadImage(
   }
 }
 
+/**
+ * Получает длительность видео в секундах
+ */
+export function getVideoDuration(videoFile: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+    video.src = URL.createObjectURL(videoFile)
+    
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(video.src)
+      resolve(video.duration)
+    }
+    
+    video.onerror = () => {
+      URL.revokeObjectURL(video.src)
+      reject(new Error('Не удалось загрузить метаданные видео'))
+    }
+  })
+}
+
+/**
+ * Загружает видео на pictrs
+ */
+export async function uploadVideo(
+  video: File | null | undefined,
+  instance: string,
+  jwt: string
+): Promise<string | undefined> {
+  if (!video) return
+
+  // Определяем MIME-тип по расширению файла, если браузер не определил
+  let videoType = video.type
+  if (!videoType) {
+    const fileName = video.name.toLowerCase()
+    if (fileName.endsWith('.mp4')) {
+      videoType = 'video/mp4'
+    } else if (fileName.endsWith('.webm')) {
+      videoType = 'video/webm'
+    } else if (fileName.endsWith('.mov')) {
+      videoType = 'video/quicktime'
+    } else if (fileName.endsWith('.avi')) {
+      videoType = 'video/x-msvideo'
+    } else if (fileName.endsWith('.mkv')) {
+      videoType = 'video/x-matroska'
+    } else if (fileName.endsWith('.gif')) {
+      videoType = 'image/gif'
+    } else {
+      videoType = 'video/mp4' // По умолчанию
+    }
+  }
+
+  // Создаем кастомную fetch функцию с увеличенным таймаутом для больших файлов
+  const timeoutMs = Math.max(300000, Math.min(video.size / 1024 * 500, 600000)) // От 5 до 10 минут
+  
+  const customFetchWithTimeout = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+    
+    try {
+      const response = await fetch(input, {
+        ...init,
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+      return response
+    } catch (error: any) {
+      clearTimeout(timeoutId)
+      if (error?.name === 'AbortError') {
+        throw new Error(`Загрузка видео превысила таймаут (${(timeoutMs / 1000).toFixed(0)}s)`)
+      }
+      throw error
+    }
+  }
+  
+  const res = await client({ 
+    auth: jwt, 
+    instanceURL: instance,
+    func: customFetchWithTimeout
+  }).uploadImage({
+    image: video,
+  })
+
+  if (res.url) {
+    return res.url
+  }
+  
+  throw new Error(`Failed to upload video. ${res.msg || 'Unknown error'}`)
+}
+
 export const instanceToURL = (input: string) =>
   input.startsWith('http://') || input.startsWith('https://')
     ? input

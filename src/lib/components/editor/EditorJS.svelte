@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { profile } from '$lib/auth'
-  import { uploadImage, serializeEditorModel, deserializeEditorModel } from '$lib/util'
+  import { uploadImage, uploadVideo, getVideoDuration, serializeEditorModel, deserializeEditorModel } from '$lib/util'
+  import { toast } from 'mono-svelte'
   import { Button } from 'mono-svelte'
   import CustomInputTune from './CustomInputTune'
   import './CustomInputTune.css'
@@ -22,6 +23,7 @@
     checklist: `${iconPath}/list-check.svg`,
     quote: `${iconPath}/quote.svg`,
     image: `${iconPath}/card-image.svg`,
+    video: `${iconPath}/images.svg`, // Используем иконку галереи как временную, можно заменить на специальную для видео
     link: `${iconPath}/link-45deg.svg`,
     italic: `${iconPath}/type-italic.svg`,
     bold: `${iconPath}/type-bold.svg`,
@@ -660,6 +662,183 @@
       wrapper.appendChild(caption)
       wrapper.appendChild(altInput)
       wrapper.appendChild(titleInput)
+      
+      return wrapper
+    }
+
+    save() {
+      return this.data
+    }
+  }
+
+  // Кастомный плагин для видео
+  class VideoTool {
+    private api: any;
+    private data: { file: { url: string; alt: string; title: string }; caption: string };
+    private config: any;
+    private isUploading: boolean = false;
+
+    static get toolbox() {
+      return {
+        title: 'Видео',
+        icon: `<img src="${icons.video}" width="16" height="16" />`
+      }
+    }
+
+    constructor({ data, config, api }: { data?: { file: { url: string; alt: string; title: string }; caption: string }, config?: any, api?: any }) {
+      this.api = api
+      this.data = {
+        file: {
+          url: data?.file?.url || '',
+          alt: data?.file?.alt || '',
+          title: data?.file?.title || ''
+        },
+        caption: data?.caption || ''
+      }
+      this.config = config || {}
+    }
+
+    render() {
+      const wrapper = document.createElement('div')
+      wrapper.style.position = 'relative'
+      
+      const video = document.createElement('video')
+      video.controls = true
+      video.style.maxWidth = '100%'
+      video.style.height = 'auto'
+      video.style.width = '100%'
+      video.style.display = this.data.file.url ? 'block' : 'none'
+      
+      // Создаем loader для отображения процесса загрузки
+      const loader = document.createElement('div')
+      loader.classList.add('video-tool__loader')
+      loader.style.display = 'none'
+      loader.innerHTML = `
+        <div class="video-tool__loader-spinner"></div>
+        <div class="video-tool__loader-text">Загрузка видео...</div>
+      `
+      
+      // Создаем скрытый input для выбора файла
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'video/*'
+      input.style.display = 'none'
+      
+      // Если видео уже загружено, добавляем source элемент
+      if (this.data.file.url) {
+        const source = document.createElement('source')
+        source.src = this.data.file.url
+        // Определяем MIME-тип по расширению URL
+        const urlLower = this.data.file.url.toLowerCase()
+        if (urlLower.includes('.webm') || urlLower.includes('webm')) {
+          source.type = 'video/webm'
+        } else if (urlLower.includes('.mov') || urlLower.includes('quicktime')) {
+          source.type = 'video/quicktime'
+        } else if (urlLower.includes('.avi') || urlLower.includes('x-msvideo')) {
+          source.type = 'video/x-msvideo'
+        } else if (urlLower.includes('.mkv') || urlLower.includes('matroska')) {
+          source.type = 'video/x-matroska'
+        } else {
+          source.type = 'video/mp4'
+        }
+        video.appendChild(source)
+        // Добавляем текст для браузеров без поддержки видео
+        const fallbackText = document.createTextNode('Ваш браузер не поддерживает видео.')
+        video.appendChild(fallbackText)
+      } else {
+        // Если видео не загружено, сразу открываем диалог выбора файла
+        setTimeout(() => {
+          input.click()
+        }, 100)
+      }
+      
+      // Обработчик выбора файла
+      input.onchange = async (e: Event) => {
+        const target = e.target as HTMLInputElement
+        if (!target.files) return
+        
+        const file = target.files[0]
+        if (file && $profile?.jwt) {
+          try {
+            this.isUploading = true
+            loader.style.display = 'flex'
+            video.style.display = 'none'
+            
+            // Проверяем длительность видео перед загрузкой
+            try {
+              const duration = await getVideoDuration(file)
+              
+              if (duration > 30) {
+                throw new Error('Видео слишком длинное (максимум 30 секунд)')
+              }
+            } catch (error: any) {
+              if (error.message && error.message.includes('максимум 30 секунд')) {
+                toast({
+                  content: error.message,
+                  type: 'error',
+                })
+                this.isUploading = false
+                loader.style.display = 'none'
+                input.value = ''
+                return
+              }
+              console.warn('Не удалось определить длительность видео, продолжаем загрузку:', error)
+            }
+            
+            const videoUrl = await uploadVideo(file, $profile.instance, $profile.jwt)
+            if (videoUrl) {
+              this.data.file.url = videoUrl
+              
+              // Очищаем предыдущие source элементы и текст
+              video.innerHTML = ''
+              
+              // Создаем новый source элемент
+              const source = document.createElement('source')
+              source.src = videoUrl
+              // Определяем MIME-тип по расширению файла
+              const fileName = file.name.toLowerCase()
+              if (fileName.endsWith('.mp4')) {
+                source.type = 'video/mp4'
+              } else if (fileName.endsWith('.webm')) {
+                source.type = 'video/webm'
+              } else if (fileName.endsWith('.mov')) {
+                source.type = 'video/quicktime'
+              } else if (fileName.endsWith('.avi')) {
+                source.type = 'video/x-msvideo'
+              } else if (fileName.endsWith('.mkv')) {
+                source.type = 'video/x-matroska'
+              } else {
+                source.type = 'video/mp4'
+              }
+              video.appendChild(source)
+              // Добавляем fallback текст для браузеров без поддержки видео
+              const fallbackText = document.createTextNode('Ваш браузер не поддерживает видео.')
+              video.appendChild(fallbackText)
+              
+              // Перезагружаем видео для применения изменений
+              video.load()
+              
+              // Показываем видео и скрываем loader
+              loader.style.display = 'none'
+              video.style.display = 'block'
+            }
+          } catch (error: any) {
+            console.error('Ошибка при загрузке видео:', error)
+            toast({
+              content: error.message || 'Не удалось загрузить видео. Пожалуйста, попробуйте снова.',
+              type: 'error',
+            })
+            loader.style.display = 'none'
+          } finally {
+            this.isUploading = false
+            input.value = ''
+          }
+        }
+      }
+      
+      wrapper.appendChild(video)
+      wrapper.appendChild(loader)
+      wrapper.appendChild(input)
       
       return wrapper
     }
@@ -1349,6 +1528,7 @@
           }
         },
         image: CustomImageTool,
+        video: VideoTool,
         quote: {
           class: Quote,
           inlineToolbar: ['bold', 'italic', 'customInlineLink'],
@@ -1577,6 +1757,7 @@
             "Quote": "Цитата",
             "Code": "Код",
             "Image": "Изображение",
+            "Video": "Видео",
             "Gallery": "Галерея",
             "Link": "Ссылка",
             "Unordered List": "Маркированный список",
@@ -1742,11 +1923,11 @@
 
 <div class="flex flex-col gap-1 relative editor-container">
   {#if label}
-    <span class="font-medium text-sm text-slate-600 dark:text-slate-300">{label}</span>
+    <span class="font-medium text-sm  dark:text-slate-300">{label}</span>
   {/if}
 
   <div
-    class="min-h-[400px] p-3 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 transition-all duration-200 editor-content bg-white dark:bg-slate-800 border dark:border-slate-700"
+    class="min-h-[400px] p-3 rounded-lg focus-within:ring-1 focus-within:ring-blue-500 transition-all duration-200 editor-content bg-white dark:bg-slate-800 border dark:border-slate-700"
     bind:this={element}
   />
 
@@ -2301,6 +2482,155 @@
     color: #e5e7eb;
   }
 
+  :global(.video-tool__wrapper video),
+  :global(video[controls]) {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0.5rem;
+  }
+
+  :global(.video-tool__caption) {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background: white;
+    color: #1f2937;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    min-height: 2.5rem;
+    resize: vertical;
+  }
+
+  :global(.dark .video-tool__caption) {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  :global(.video-tool__caption:focus) {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
+
+  :global(.dark .video-tool__caption:focus) {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+  }
+
+  :global(.video-tool__alt),
+  :global(.video-tool__title) {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background: white;
+    color: #1f2937;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  :global(.dark .video-tool__alt),
+  :global(.dark .video-tool__title) {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  :global(.video-tool__alt:focus),
+  :global(.video-tool__title:focus) {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
+
+  :global(.dark .video-tool__alt:focus),
+  :global(.dark .video-tool__title:focus) {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+  }
+
+  :global(.video-tool__button) {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  :global(.video-tool__button:hover:not(:disabled)) {
+    background: #e5e7eb;
+  }
+
+  :global(.video-tool__button:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :global(.dark .video-tool__button) {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  :global(.dark .video-tool__button:hover:not(:disabled)) {
+    background: #4b5563;
+  }
+
+  :global(.video-tool__loader) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 0.5rem;
+    z-index: 10;
+  }
+
+  :global(.dark .video-tool__loader) {
+    background: rgba(31, 41, 55, 0.8);
+  }
+
+  :global(.video-tool__loader-spinner) {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #2563eb;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+  }
+
+  :global(.dark .video-tool__loader-spinner) {
+    border-color: #60a5fa;
+    border-top-color: transparent;
+  }
+
+  :global(.video-tool__loader-text) {
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+  }
+
+  :global(.dark .video-tool__loader-text) {
+    color: #e5e7eb;
+  }
+
   :global(.gallery-loader) {
     position: absolute;
     top: 0;
@@ -2653,6 +2983,12 @@
     background: #374151;
   }
   
+  /* Стили для позиционирования тулбара */
+  :global(.ce-toolbar) {
+    left: 1.5rem !important;
+    margin-left: 0 !important;
+  }
+
   /* Стили для иконок в тулбаре */
   :global(.ce-toolbar__plus img),
   :global(.ce-toolbar__settings-btn img),
@@ -2682,6 +3018,10 @@
 
   :global(.ce-toolbar__actions button:hover img) {
     opacity: 1;
+  }
+
+  :global(.ce-block__content) {
+    margin-left: 1.5rem !important;
   }
 
   :global(.ce-block__content img) {

@@ -359,6 +359,25 @@
         return `<div class="post-gallery"${anchorId}>
           <div class="gallery-images">${images}</div>
         </div>`;
+      case 'video':
+        if (!block.data?.file?.url) return '';
+        const videoUrl = block.data.file.url;
+        // Определяем MIME-тип по расширению URL
+        let videoType = 'video/mp4';
+        if (videoUrl.includes('.webm')) {
+          videoType = 'video/webm';
+        } else if (videoUrl.includes('.mov')) {
+          videoType = 'video/quicktime';
+        } else if (videoUrl.includes('.avi')) {
+          videoType = 'video/x-msvideo';
+        } else if (videoUrl.includes('.mkv')) {
+          videoType = 'video/x-matroska';
+        }
+        const videoCaption = block.data.caption ? `<figcaption>${block.data.caption}</figcaption>` : '';
+        return `<p${anchorId}><video controls style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+          <source src="${videoUrl}" type="${videoType}">
+          Ваш браузер не поддерживает видео.
+        </video></p>${videoCaption}`;
       default:
         return '';
     }
@@ -430,8 +449,8 @@
         console.log(content);
 
         processedContent = DOMPurify.sanitize(content, {
-          ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'img', 'figure', 'figcaption', 'div', 'blockquote', 'pre', 'code', 'input', 'iframe', 'footer'],
-          ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'width', 'height', 'loading', 'class', 'data-index', 'data-url', 'type', 'checked', 'disabled', 'data-caption', 'id', 'style', 'frameborder', 'allowfullscreen', 'allow']
+          ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'img', 'figure', 'figcaption', 'div', 'blockquote', 'pre', 'code', 'input', 'iframe', 'footer', 'video', 'source'],
+          ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'width', 'height', 'loading', 'class', 'data-index', 'data-url', 'type', 'checked', 'disabled', 'data-caption', 'id', 'style', 'frameborder', 'allowfullscreen', 'allow', 'controls']
         });
       } catch (error) {
         console.error('Error processing post body:', error);
@@ -781,14 +800,14 @@
           'ul', 'ol', 'li', 'h1', 'h2', 'h3', 
           'img', 'figure', 'figcaption', 'div', 
           'blockquote', 'pre', 'code', 'input', 'footer',
-          'iframe'
+          'iframe', 'video', 'source'
         ],
         ALLOWED_ATTR: isMetaContent ? [] : [
           'href', 'target', 'rel', 'src', 'alt', 
           'title', 'width', 'height', 'loading', 
           'class', 'data-caption', 'id', 'checked', 
           'disabled', 'style', 'frameborder',
-          'allowfullscreen', 'allow'
+          'allowfullscreen', 'allow', 'controls', 'type'
         ]
       });
     }

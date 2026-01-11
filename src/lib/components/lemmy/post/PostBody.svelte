@@ -137,6 +137,25 @@
         return `<pre><code>${block.data.code}</code></pre>`;
       case 'image':
         return processImage(block.data.file.url, '', block.data.file.alt || '', block.data.file.title || '', block.data.file.caption || '');
+      case 'video':
+        if (!block.data?.file?.url) return '';
+        const videoUrl = block.data.file.url;
+        // Определяем MIME-тип по расширению URL
+        let videoType = 'video/mp4';
+        if (videoUrl.includes('.webm')) {
+          videoType = 'video/webm';
+        } else if (videoUrl.includes('.mov')) {
+          videoType = 'video/quicktime';
+        } else if (videoUrl.includes('.avi')) {
+          videoType = 'video/x-msvideo';
+        } else if (videoUrl.includes('.mkv')) {
+          videoType = 'video/x-matroska';
+        }
+        const videoCaption = block.data.caption ? `<figcaption>${block.data.caption}</figcaption>` : '';
+        return `<p><video controls style="max-width: 100%; height: auto;">
+          <source src="${videoUrl}" type="${videoType}">
+          Ваш браузер не поддерживает видео.
+        </video></p>${videoCaption}`;
       case 'gallery':
         return `<div class="post-gallery">
           <div class="gallery-images">
@@ -388,8 +407,8 @@
       });
 
       return DOMPurify.sanitize(processedHtml, {
-        ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'br', 'ul', 'ol', 'li', 'img', 'figure', 'figcaption', 'blockquote', 'footer'],
-        ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'srcset', 'sizes', 'loading', 'alt', 'width', 'height', 'class']
+        ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'br', 'ul', 'ol', 'li', 'img', 'figure', 'figcaption', 'blockquote', 'footer', 'video', 'source'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'srcset', 'sizes', 'loading', 'alt', 'width', 'height', 'class', 'controls', 'type', 'style']
       });
     }
     // Если мы на сервере или DOMPurify еще не загружен, возвращаем исходный HTML

@@ -146,7 +146,7 @@ items-center px-2 w-max"
 </div>
 
 <div
-  class="flex flex-col list-none flex-1 h-full divide-y divide-slate-200 dark:divide-zinc-900 *:py-4"
+  class="flex flex-col gap-4"
 >
   {#if !data.data?.length}
     <Placeholder
@@ -157,7 +157,6 @@ items-center px-2 w-max"
   {:else}
     {#each data.data as item, index (item.id)}
       <div
-        class="-mx-4 sm:-mx-6 px-4 sm:px-6"
         in:fly|global={{
           duration: 1000,
           y: 16,

@@ -623,11 +623,11 @@
     required
     bind:value={data.title}
     on:input={autosaveDraft}
-    placeholder="Отображается h1 заголовком в посте"
+    placeholder="Отображается H1 заголовком в посте"
     label={$t('form.post.title')}
     maxlength={200}
     title="Заголовок не должен превышать 200 символов"
-    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 text-sm overflow-hidden resize-none"
+    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 text-sm overflow-hidden resize-none"
   />
   <!-- Блок-подсказка по редактору сразу под заголовком -->
   <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-zinc-900/60 border border-dashed border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1.5">

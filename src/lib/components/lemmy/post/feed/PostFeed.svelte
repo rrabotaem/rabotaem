@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment'
   import Post from '$lib/components/lemmy/post/Post.svelte'
+  import PostBody from '$lib/components/lemmy/post/PostBody.svelte'
   import Placeholder from '$lib/components/ui/Placeholder.svelte'
   import { userSettings } from '$lib/settings.js'
   import type { PostView } from 'lemmy-js-client'
@@ -142,7 +143,10 @@
                       
             {#if post.post.body}
               <div class="text-base text-slate-800 dark:text-zinc-200 leading-[1.5] post mt-4">
-                {@html post.post.body}
+                <PostBody
+                  body={post.post.body}
+                  view={postView}
+                />
               </div>
             {/if}
 
