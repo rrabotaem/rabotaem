@@ -278,13 +278,35 @@
     return match ? match[1].trim() : null;
   }
 
+  // Функция для экранирования HTML-атрибутов
+  function escapeHtmlAttr(str: string): string {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  // Функция для экранирования HTML-содержимого
+  function escapeHtml(str: string): string {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function processJsonBlock(block: any): string {
     // Извлекаем якорь из tunes блока
     const anchorText = block?.tunes?.anchorInput?.text || 
                       block?.tunes?.customInput?.text;
     
     // Создаем атрибут id если есть якорь
-    const anchorId = anchorText ? ` id="${anchorText}"` : '';
+    const anchorId = anchorText ? ` id="${escapeHtmlAttr(anchorText)}"` : '';
     
     switch (block.type) {
       case 'paragraph':
@@ -305,7 +327,7 @@
         const cleanCaption = block.data.caption?.trim();
         return `<blockquote${anchorId}>
           <p>${block.data.text}</p>
-          ${cleanCaption ? `<footer>${cleanCaption}</footer>` : ''}
+          ${cleanCaption ? `<footer>${escapeHtml(cleanCaption)}</footer>` : ''}
         </blockquote>`;
       case 'code':
         return `<pre${anchorId}><code>${block.data.code}</code></pre>`;
@@ -313,13 +335,13 @@
       case 'customLink':
         const url = block.data.url || '#';
         const text = block.data.text || block.data.title || url;
-        const title = block.data.title ? ` title="${block.data.title}"` : '';
+        const title = block.data.title ? ` title="${escapeHtmlAttr(block.data.title)}"` : '';
         const isExternal = url.startsWith('http');
         const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
         const linkStyle = block.data.style || 'link';
-        return `<p${anchorId}><a href="${url}"${title}${target} class="${linkStyle}">${text}</a></p>`;
+        return `<p${anchorId}><a href="${escapeHtmlAttr(url)}"${title}${target} class="${linkStyle}">${escapeHtml(text)}</a></p>`;
       case 'embed':
-        const embedCaption = block.data.caption ? `<div class="embed-caption">${block.data.caption}</div>` : '';
+        const embedCaption = block.data.caption ? `<div class="embed-caption">${escapeHtml(block.data.caption)}</div>` : '';
         return `<div class="embed-container"${anchorId}>
           <div class="embed-responsive" style="padding-bottom: ${(block.data.height / block.data.width * 100).toFixed(2)}%">
             <iframe 
@@ -336,24 +358,24 @@
         const imageWithAnchor = anchorId 
           ? `<div class="image-wrapper"${anchorId}>
           <img src="${block.data.file.url}" 
-            alt="${block.data.file.alt || ''}" 
-            title="${block.data.file.title || ''}"
-            ${block.data.caption ? `data-caption="${block.data.caption}"` : ''}>
-          ${block.data.caption ? `<div class="image-alt-text">${block.data.caption}</div>` : ''}
+            alt="${escapeHtmlAttr(block.data.file.alt || '')}" 
+            title="${escapeHtmlAttr(block.data.file.title || '')}"
+            ${block.data.caption ? `data-caption="${escapeHtmlAttr(block.data.caption)}"` : ''}>
+          ${block.data.caption ? `<div class="image-alt-text">${escapeHtml(block.data.caption)}</div>` : ''}
         </div>`
           : `<div class="image-wrapper">
           <img src="${block.data.file.url}" 
-            alt="${block.data.file.alt || ''}" 
-            title="${block.data.file.title || ''}"
-            ${block.data.caption ? `data-caption="${block.data.caption}"` : ''}>
-          ${block.data.caption ? `<div class="image-alt-text">${block.data.caption}</div>` : ''}
+            alt="${escapeHtmlAttr(block.data.file.alt || '')}" 
+            title="${escapeHtmlAttr(block.data.file.title || '')}"
+            ${block.data.caption ? `data-caption="${escapeHtmlAttr(block.data.caption)}"` : ''}>
+          ${block.data.caption ? `<div class="image-alt-text">${escapeHtml(block.data.caption)}</div>` : ''}
         </div>`;
         return imageWithAnchor;
       case 'gallery':
         const images = block.data.images.map((img: any, index: number) => 
           `<div class="gallery-item loaded" ${index > 0 ? 'style="display: none;"' : ''}>
-            <img src="${img.url}" alt="${img.alt || ''}" title="${img.title || ''}">
-            ${img.title ? `<div class="gallery-alt-text">${img.title}</div>` : ''}
+            <img src="${img.url}" alt="${escapeHtmlAttr(img.alt || '')}" title="${escapeHtmlAttr(img.title || '')}">
+            ${img.title ? `<div class="gallery-alt-text">${escapeHtml(img.title)}</div>` : ''}
           </div>`
         ).join('');
         return `<div class="post-gallery"${anchorId}>
@@ -373,7 +395,7 @@
         } else if (videoUrl.includes('.mkv')) {
           videoType = 'video/x-matroska';
         }
-        const videoCaption = block.data.caption ? `<figcaption>${block.data.caption}</figcaption>` : '';
+        const videoCaption = block.data.caption ? `<figcaption>${escapeHtml(block.data.caption)}</figcaption>` : '';
         return `<p${anchorId}><video controls style="max-width: 100%; height: auto; border-radius: 0.5rem;">
           <source src="${videoUrl}" type="${videoType}">
           Ваш браузер не поддерживает видео.
@@ -741,19 +763,19 @@
           case 'code':
             return `<pre${anchorText ? ` id="${anchorText}"` : ''}><code>${block.data.code}</code></pre>`;
           case 'image':
-            const imageWrapper = `<div class="image-wrapper"${anchorText ? ` id="${anchorText}"` : ''}>
+            const imageWrapper = `<div class="image-wrapper"${anchorText ? ` id="${escapeHtmlAttr(anchorText)}"` : ''}>
               <img src="${block.data.file.url}" 
-                alt="${block.data.file.alt || ''}" 
-                title="${block.data.file.title || ''}"
-                ${block.data.caption ? `data-caption="${block.data.caption}"` : ''}>
-              ${block.data.caption ? `<div class="image-alt-text">${block.data.caption}</div>` : ''}
+                alt="${escapeHtmlAttr(block.data.file.alt || '')}" 
+                title="${escapeHtmlAttr(block.data.file.title || '')}"
+                ${block.data.caption ? `data-caption="${escapeHtmlAttr(block.data.caption)}"` : ''}>
+              ${block.data.caption ? `<div class="image-alt-text">${escapeHtml(block.data.caption)}</div>` : ''}
             </div>`;
             return imageWrapper;
           case 'gallery':
             const images = block.data.images.map((img: any, index: number) => 
               `<div class="gallery-item loaded" ${index > 0 ? 'style="display: none;"' : ''}>
-                <img src="${img.url}" alt="${img.alt || ''}" title="${img.title || ''}">
-                ${img.title ? `<div class="gallery-alt-text">${img.title}</div>` : ''}
+                <img src="${img.url}" alt="${escapeHtmlAttr(img.alt || '')}" title="${escapeHtmlAttr(img.title || '')}">
+                ${img.title ? `<div class="gallery-alt-text">${escapeHtml(img.title)}</div>` : ''}
               </div>`
             ).join('');
             return `<div class="post-gallery"${anchorText ? ` id="${anchorText}"` : ''}>
@@ -769,7 +791,7 @@
             const linkStyle = block.data.style || 'link';
             return `<p${anchorText ? ` id="${anchorText}"` : ''}><a href="${url}"${title}${target} class="${linkStyle}">${text}</a></p>`;
           case 'embed':
-            const embedCaption = block.data.caption ? `<div class="embed-caption">${block.data.caption}</div>` : '';
+            const embedCaption = block.data.caption ? `<div class="embed-caption">${escapeHtml(block.data.caption)}</div>` : '';
             return `<div class="embed-container"${anchorText ? ` id="${anchorText}"` : ''}>
               <div class="embed-responsive" style="padding-bottom: ${(block.data.height / block.data.width * 100).toFixed(2)}%">
                 <iframe 
