@@ -361,6 +361,32 @@
                 "reason": "Reason",
                 "modalTitle": "Deny Application"
             },
+            "communities": {
+                "title": "Communities",
+                "view": "View",
+                "search": {
+                    "placeholder": "Search local communities"
+                },
+                "warning": {
+                    "title": "Danger zone",
+                    "description": "Remove hides the community; purge permanently deletes all posts and data."
+                },
+                "remove": {
+                    "title": "Removing Community",
+                    "description": "This will hide the community from users. You can restore it later."
+                },
+                "restore": {
+                    "title": "Restoring Community",
+                    "description": "This will make the community visible again."
+                },
+                "edit": {
+                    "title": "Edit Community"
+                },
+                "reason": {
+                    "placeholder": "Reason for this action",
+                    "required": "Please provide a reason for this action."
+                }
+            },
             "taglines": {
                 "title": "Taglines",
                 "add": "Add a tagline",
@@ -619,6 +645,8 @@
         "invalidDateBeforeCurrent": "Invalid date. It is before the current time.",
         "bannedUser": "Banned that user.",
         "unbannedUser": "Unbanned that user.",
+        "removedCommunity": "Removed that community.",
+        "restoredCommunity": "Restored that community.",
         "needCommunity": "You must set a community.",
         "invalidURL": "Invalid URL",
         "generatedTitle": "Generated title and body from the URL. Do you want to undo this?",

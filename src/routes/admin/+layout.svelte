@@ -34,6 +34,10 @@
           name: $t('routes.admin.taglines.title'),
         },
         {
+          href: '/admin/communities',
+          name: $t('routes.admin.communities.title'),
+        },
+        {
           href: '/admin/team',
           name: $t('routes.admin.team.title'),
         },
