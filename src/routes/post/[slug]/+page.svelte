@@ -300,6 +300,16 @@
       .replace(/'/g, '&#39;');
   }
 
+  function decodeHtmlEntities(str: string): string {
+    if (!str) return '';
+    return str
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+  }
+
   function processJsonBlock(block: any): string {
     // Извлекаем якорь из tunes блока
     const anchorText = block?.tunes?.anchorInput?.text || 
@@ -325,9 +335,10 @@
           : `<ul${anchorId} class="${listClass}">${items}</ul>`;
       case 'quote':
         const cleanCaption = block.data.caption?.trim();
+        const decodedCaption = cleanCaption ? decodeHtmlEntities(cleanCaption) : '';
         return `<blockquote${anchorId}>
           <p>${block.data.text}</p>
-          ${cleanCaption ? `<footer>${escapeHtml(cleanCaption)}</footer>` : ''}
+          ${decodedCaption ? `<footer>${decodedCaption}</footer>` : ''}
         </blockquote>`;
       case 'code':
         return `<pre${anchorId}><code>${block.data.code}</code></pre>`;
@@ -456,7 +467,7 @@
         if (isJsonContent(content)) {
           content = convertJsonToHtml(content);
         }
-        
+
         console.log('content before');
         console.log(content);
 
@@ -466,7 +477,6 @@
           .replace(/<preview-description>.*?<\/preview-description>/gs, '')
           .replace(/<meta-title>.*?<\/meta-title>/gs, '')
           .replace(/<meta-description>.*?<\/meta-description>/gs, '');
-        
         console.log('content after');
         console.log(content);
 
@@ -756,9 +766,10 @@
               : `<ul${anchorText ? ` id="${anchorText}"` : ''} class="${block.data.style === 'checklist' ? 'checklist' : ''}">${items}</ul>`;
           case 'quote':
             const cleanCaption = block.data.caption?.trim();
+            const decodedCaption = cleanCaption ? decodeHtmlEntities(cleanCaption) : '';
             return `<blockquote${anchorText ? ` id="${anchorText}"` : ''}>
               <p>${block.data.text}</p>
-              ${cleanCaption ? `<footer>${cleanCaption}</footer>` : ''}
+              ${decodedCaption ? `<footer>${decodedCaption}</footer>` : ''}
             </blockquote>`;
           case 'code':
             return `<pre${anchorText ? ` id="${anchorText}"` : ''}><code>${block.data.code}</code></pre>`;

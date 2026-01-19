@@ -129,9 +129,11 @@
           ? `<ol>${items}</ol>` 
           : `<ul class="${listClass}">${items}</ul>`;
       case 'quote':
+        const cleanCaption = block.data.caption?.trim();
+        const decodedCaption = cleanCaption ? decodeHtmlEntities(cleanCaption) : '';
         return `<blockquote>
           <p>${block.data.text}</p>
-          ${block.data.caption ? `<footer>${block.data.caption}</footer>` : ''}
+          ${decodedCaption ? `<footer>${decodedCaption}</footer>` : ''}
         </blockquote>`;
       case 'code':
         return `<pre><code>${block.data.code}</code></pre>`;
@@ -413,6 +415,16 @@
     }
     // Если мы на сервере или DOMPurify еще не загружен, возвращаем исходный HTML
     return html;
+  }
+
+  function decodeHtmlEntities(str: string): string {
+    if (!str) return '';
+    return str
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
   }
 
   // Сбрасываем флаг при изменении body
