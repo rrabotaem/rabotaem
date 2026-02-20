@@ -124,12 +124,6 @@
     <Switch bind:checked={formData.show_scores}>
       {$t('form.profile.scores')}
     </Switch>
-    <Switch bind:checked={formData.bot_account}>
-      {$t('form.profile.bot')}
-    </Switch>
-    <Switch bind:checked={formData.show_bot_accounts}>
-      {$t('form.profile.showBots')}
-    </Switch>
     <Switch bind:checked={formData.show_read_posts}>
       {$t('form.profile.showRead')}
     </Switch>

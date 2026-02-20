@@ -227,7 +227,7 @@
       const baseUrl = imgUrl.split('?')[0];
       
       // Базовые параметры для всех изображений
-      const baseParams = 'format=webp&quality=80';
+      const baseParams = 'format=webp&quality=90';
       
       // Формируем URL с параметрами
       const getImageUrl = (size: number) => {
@@ -242,7 +242,7 @@
       // 240px для мобильных (1x)
       // 480px для стандартных экранов (достаточно для max-width: 640px)
       // 960px для ретина-дисплеев (2x)
-      const sizes = [240, 480, 960];
+      const sizes = [240, 480, 960, 1440];
       const srcset = sizes
         .map(size => `${getImageUrl(size)} ${size}w`)
         .join(', ');
@@ -250,7 +250,7 @@
       // Указываем точные размеры для разных брейкпоинтов
       // (max-width: 640px) - мобильные устройства
       // (min-width: 641px) - планшеты и десктопы
-      const sizesAttr = '(max-width: 640px) 240px, (min-width: 641px) 480px';
+      const sizesAttr = '(max-width: 640px) 240px, (min-width: 641px) 960px';
       
       // Определяем атрибуты загрузки в зависимости от позиции изображения
       let loadingAttrs = '';

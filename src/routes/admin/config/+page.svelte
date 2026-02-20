@@ -27,6 +27,12 @@
     const { jwt } = $profile
 
     try {
+      if (formData) {
+        formData.slur_filter_regex = slurFilterDisplay
+          ? `(?i)${slurFilterDisplay}`
+          : undefined
+      }
+
       await getClient().editSite({
         ...formData,
       })
@@ -50,6 +56,9 @@
     icon: false,
     banner: false,
   }
+
+  // Показываем regex без флага (?i) — он добавляется автоматически при сохранении
+  let slurFilterDisplay = formData?.slur_filter_regex?.replace(/^\(\?i\)/, '') ?? ''
 </script>
 
 <svelte:head>
@@ -196,9 +205,10 @@
       {$t('routes.admin.config.hideModlogModNames')}
     </Switch>
     <TextInput
-      bind:value={formData.slur_filter_regex}
+      bind:value={slurFilterDisplay}
       label={$t('routes.admin.config.slurFilter')}
-      placeholder="(word1|word2)"
+      placeholder="(word1|word2|word3)"
+      title="Флаг (?i) добавляется автоматически — регистр учитываться не будет"
     />
     <Switch bind:checked={formData.federation_enabled} defaultValue={true}>
       {$t('routes.admin.config.federation')}

@@ -303,8 +303,17 @@
         throw new Error('Заголовок слишком длинный. Используйте более короткий заголовок')
       }
 
+      // Проверяем стоп-слова на фронтенде (тело поста хранится в base64, бэкенд не может его проверить)
+      const slurRegex = $site?.site_view?.local_site?.slur_filter_regex
+      if (slurRegex) {
+        const bodyText = extractPlainText(data.body)
+        if (checkSlurs(data.title, slurRegex) || checkSlurs(bodyText, slurRegex)) {
+          throw new Error($t('error.slurs'))
+        }
+      }
+
       // Проверяем права на редактирование
-      if (edit && editingPost && 
+      if (edit && editingPost &&
           $profile?.user && !isAdmin($profile.user) && 
           editingPost.creator_id !== $profile.user?.local_user_view.person.id) {
         throw new Error('Недостаточно прав для редактирования')
@@ -404,6 +413,34 @@
   let addAltText = false
 
   $: generation.generatable = canGenerateTitle(data.url)
+
+  function extractPlainText(body: string): string {
+    if (!body) return ''
+    try {
+      const decoded = deserializeEditorModel(body)
+      if (decoded?.blocks) {
+        return decoded.blocks.map((b: any) => {
+          const d = b.data
+          if (!d) return ''
+          if (d.text) return d.text
+          if (d.items) return Array.isArray(d.items) ? d.items.map((i: any) => typeof i === 'string' ? i : i.content ?? '').join(' ') : ''
+          if (d.caption) return d.caption
+          return ''
+        }).join(' ')
+      }
+    } catch {}
+    // TipTap HTML
+    return body.replace(/<[^>]+>/g, ' ')
+  }
+
+  function checkSlurs(text: string, slurRegex: string): boolean {
+    try {
+      const pattern = slurRegex.replace(/^\(\?i\)/, '')
+      return new RegExp(pattern, 'i').test(text)
+    } catch {
+      return false
+    }
+  }
 </script>
 
 {#if uploadingImage}
