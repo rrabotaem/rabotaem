@@ -36,6 +36,7 @@ import YandexMetrika from '$lib/components/YandexMetrika.svelte'
 import GoogleAnalytics from '$lib/components/GoogleAnalytics.svelte'
 import PopularPosts from '$lib/components/ui/sidebar/PopularPosts.svelte'
 import StaticBannerRight from '$lib/components/ui/sidebar/StaticBannerRight.svelte'
+import { env } from '$env/dynamic/public'
 
   nProgress.configure({
     minimum: 0.4,
@@ -187,9 +188,11 @@ import StaticBannerRight from '$lib/components/ui/sidebar/StaticBannerRight.svel
   >
     <div class="flex flex-col gap-4 h-[calc(100vh-4rem)] sticky top-16 p-4">
       <!-- Статичный баннер над правым сайдбаром -->
-      <div class="flex-shrink-0">
-        <StaticBannerRight />
-      </div>
+      {#if env.PUBLIC_SHOW_SIDEBAR_BANNER !== 'false'}
+        <div class="flex-shrink-0">
+          <StaticBannerRight />
+        </div>
+      {/if}
 
       <!-- Прокручиваемый контент сайдбара -->
       <div class="flex flex-col gap-4 flex-1 min-h-0 overflow-auto hover:scrollbar scrollbar-hidden">

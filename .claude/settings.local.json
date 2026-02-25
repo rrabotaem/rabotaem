@@ -5,7 +5,8 @@
       "Bash(bun install:*)",
       "Bash(/opt/homebrew/bin/bun install:*)",
       "Bash(~/.bun/bin/bun install:*)",
-      "WebFetch(domain:api.rabotaem.app)"
+      "WebFetch(domain:api.rabotaem.app)",
+      "Bash(git status -u)"
     ]
   }
 }

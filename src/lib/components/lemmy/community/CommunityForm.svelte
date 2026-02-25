@@ -24,6 +24,7 @@
 
   let communityNameError: string | undefined = undefined
   let communityNameInput: HTMLInputElement | undefined = undefined
+  let nameManuallyEdited = false
 
   export let formData: {
     name: string
@@ -69,14 +70,27 @@
 
   // Функция для обработки изменения отображаемого имени
   function handleDisplayNameChange() {
-    if (!edit) { // Только если это не режим редактирования
+    if (!edit && !nameManuallyEdited) {
       formData.name = transliterate(formData.displayName.toLowerCase())
-        .replace(/[^a-z0-9\s-]/g, '-') // Заменяем все недопустимые символы на дефис, сохраняя пробелы
-        .replace(/\s+/g, '_')          // Заменяем пробелы на подчеркивания
-        .replace(/-+/g, '-')           // Убираем множественные дефисы
-        .replace(/^-|-$/g, '')         // Убираем дефисы в начале и конце
-        .replace(/^_|_$/g, '');        // Убираем подчеркивания в начале и конце
+        .replace(/[^a-z0-9\s-]/g, '-')
+        .replace(/\s+/g, '_')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .replace(/^_|_$/g, '');
     }
+  }
+
+  // Обработка ручного изменения поля name
+  function handleNameInput() {
+    if (formData.name.trim() === '') {
+      nameManuallyEdited = false
+    } else {
+      nameManuallyEdited = true
+    }
+    // Нормализуем ввод: только латиница, цифры, подчёркивания, дефисы
+    formData.name = formData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, '')
   }
 
   function validateSidebar(text: string | undefined): boolean {
@@ -233,7 +247,6 @@
     required
     label={$t('form.profile.communityDisplayName')}
     bind:value={formData.displayName}
-    bind:element={communityNameInput}
     on:input={() => {
       communityNameError = undefined
       communityNameInput?.setCustomValidity('')
@@ -242,13 +255,42 @@
     class="w-full"
     placeholder="Хорошее имя сообщества - уместите в пару слов, не используйте спецсимволы и цифры"
   />
-  <p class="text-xs text-slate-500 dark:text-zinc-400">
-    Длина имени сообщества не может быть длиннее {COMMUNITY_NAME_MAX_LENGTH} латинских символов. Сейчас: {formData.name.length}/
-    {COMMUNITY_NAME_MAX_LENGTH}.
-  </p>
-  {#if formData.name.trim().length > COMMUNITY_NAME_MAX_LENGTH}
-    <p class="text-xs text-red-500">
-      Имя слишком длинное — укоротите его, чтобы создать сообщество.
+
+  {#if !edit}
+    <!-- Предупреждение -->
+    <div class="flex items-start gap-2 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+      <span class="flex-shrink-0 mt-0.5">⚠</span>
+      <span>Ссылку на сообщество нельзя изменить после создания. Убедитесь, что она вам подходит.</span>
+    </div>
+
+    <!-- Поле name (slug) -->
+    <TextInput
+      required
+      label="Ссылка на сообщество"
+      bind:value={formData.name}
+      bind:element={communityNameInput}
+      on:input={handleNameInput}
+      maxlength={COMMUNITY_NAME_MAX_LENGTH}
+      class="w-full"
+      placeholder="my_community"
+    />
+    <p class="text-xs text-slate-500 dark:text-zinc-400">
+      Только латинские буквы, цифры, дефисы и подчёркивания. Максимум {COMMUNITY_NAME_MAX_LENGTH} символов ({formData.name.length}/{COMMUNITY_NAME_MAX_LENGTH}).
+    </p>
+    {#if formData.name.trim().length > COMMUNITY_NAME_MAX_LENGTH}
+      <p class="text-xs text-red-500">
+        Имя слишком длинное — укоротите его, чтобы создать сообщество.
+      </p>
+    {/if}
+    {#if formData.name.trim()}
+      <p class="text-sm text-slate-600 dark:text-zinc-400">
+        Ваша ссылка: <span class="font-mono font-medium text-slate-900 dark:text-zinc-100">/c/{formData.name}</span>
+      </p>
+    {/if}
+  {:else}
+    <!-- В режиме редактирования — показываем slug как read-only -->
+    <p class="text-sm text-slate-500 dark:text-zinc-400">
+      Ссылка на сообщество: <span class="font-mono font-medium text-slate-900 dark:text-zinc-100">/c/{formData.name}</span>
     </p>
   {/if}
   <div class="flex flex-row gap-4 flex-wrap *:flex-1">
