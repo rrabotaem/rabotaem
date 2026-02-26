@@ -214,7 +214,7 @@
         .map((block: any) => processJsonBlock(block))
         .join('\n');
         
-      return `${previewImage}${previewDescription}${metaTitle}${metaDescription}${htmlContent}`;
+      return `${previewImage}${previewDescription}${htmlContent}`;
     } catch (error) {
       console.error('Error converting JSON to HTML:', error);
       return '';
@@ -398,7 +398,10 @@
       }
     }
     
-    return content || html;
+    const result = content || html;
+    return result
+      .replace(/<meta-title>.*?<\/meta-title>/gs, '')
+      .replace(/<meta-description>.*?<\/meta-description>/gs, '');
   }
 
   function sanitizeHtml(html: string) {

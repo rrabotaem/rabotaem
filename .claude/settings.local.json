@@ -6,7 +6,9 @@
       "Bash(/opt/homebrew/bin/bun install:*)",
       "Bash(~/.bun/bin/bun install:*)",
       "WebFetch(domain:api.rabotaem.app)",
-      "Bash(git status -u)"
+      "Bash(git status -u)",
+      "Bash(git add src/lib/components/lemmy/post/PostBody.svelte)",
+      "Bash(git commit:*)"
     ]
   }
 }
