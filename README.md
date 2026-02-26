@@ -117,6 +117,9 @@ docker compose up -d
 | `PUBLIC_INTERNAL_INSTANCE`  | URL                 | Value of `PUBLIC_INSTANCE_URL`         |
 | `PUBLIC_LOCK_TO_INSTANCE`   | `bool`              | `true` if `PUBLIC_INSTANCE_URL` is set |
 | `PUBLIC_FAVICON`            | URL                 | `/img/logo-background.svg`             |
+| `PUBLIC_LANGUAGE`           | `string`            | `en`                                   |
+
+**`PUBLIC_LANGUAGE`** — язык интерфейса (например, `ru`, `en`).
 
 ### Производительность и SEO
 
@@ -141,20 +144,70 @@ docker compose up -d
 | Variable                    | Values              | Default Value                          |
 | --------------------------- | ------------------- | -------------------------------------- |
 | `PUBLIC_EXPANDABLE_IMAGES`  | `bool`              | true                                   |
-| `PUBLIC_MARK_READ_POSTS`   | `bool`              | true                                   |
-| `PUBLIC_HIDE_DELETED`      | `bool`              | true                                   |
-| `PUBLIC_HIDE_REMOVED`      | `bool`              | true                                   |
-| `PUBLIC_NSFW_BLUR`         | `bool`              | true                                   |
+| `PUBLIC_MARK_READ_POSTS`    | `bool`              | true                                   |
+| `PUBLIC_HIDE_DELETED`       | `bool`              | true                                   |
+| `PUBLIC_HIDE_REMOVED`       | `bool`              | true                                   |
+| `PUBLIC_NSFW_BLUR`          | `bool`              | true                                   |
 | `PUBLIC_RANDOM_PLACEHOLDERS`| `bool`              | true                                   |
-| `PUBLIC_REMOVE_CREDIT`     | `bool`              | false                                  |
+| `PUBLIC_REMOVE_CREDIT`      | `bool`              | false                                  |
 
 ### Сортировка по умолчанию
 
-| Variable                    | Values              | Default Value                          |
-| --------------------------- | ------------------- | -------------------------------------- |
-| `PUBLIC_DEFAULT_FEED_SORT`  | `SortType`          | Active                                 |
-| `PUBLIC_DEFAULT_FEED`       | `ListingType`       | All                                    |
-| `PUBLIC_DEFAULT_COMMENT_SORT` | `CommentSortType` | Hot                                    |
+| Variable                      | Values              | Default Value                        |
+| ----------------------------- | ------------------- | ------------------------------------ |
+| `PUBLIC_DEFAULT_FEED_SORT`    | `SortType`          | Active                               |
+| `PUBLIC_DEFAULT_FEED`         | `ListingType`       | All                                  |
+| `PUBLIC_DEFAULT_COMMENT_SORT` | `CommentSortType`   | Hot                                  |
+| `PUBLIC_MIXED_FEED`           | `bool`              | false                                |
+
+**`PUBLIC_MIXED_FEED`** — при выборе `TopDay`, по мере промотки лента автоматически перейдёт на `TopWeek` и далее.
+
+### SEO мета-теги
+
+| Variable                      | Values    | Default Value |
+| ----------------------------- | --------- | ------------- |
+| `PUBLIC_SITE_TITLE`           | `string`  | —             |
+| `PUBLIC_SITE_DESCRIPTION`     | `string`  | —             |
+| `PUBLIC_META_DESCRIPTION`     | `string`  | —             |
+| `PUBLIC_OG_TITLE`             | `string`  | —             |
+| `PUBLIC_OG_DESCRIPTION`       | `string`  | —             |
+| `PUBLIC_OG_IMAGE`             | URL       | —             |
+| `PUBLIC_OG_URL`               | URL       | —             |
+| `PUBLIC_TWITTER_TITLE`        | `string`  | —             |
+| `PUBLIC_TWITTER_DESCRIPTION`  | `string`  | —             |
+
+### Аналитика
+
+| Variable                      | Values    | Default Value |
+| ----------------------------- | --------- | ------------- |
+| `PUBLIC_GA_MEASUREMENT_ID`    | `string`  | —             |
+| `PUBLIC_YM_MEASUREMENT_ID`    | `string`  | —             |
+
+**`PUBLIC_GA_MEASUREMENT_ID`** — идентификатор Google Analytics (формат `G-XXXXXXXXXX`).
+
+**`PUBLIC_YM_MEASUREMENT_ID`** — идентификатор Яндекс.Метрики.
+
+### Сайдбар и навигация
+
+| Variable                      | Values    | Default Value |
+| ----------------------------- | --------- | ------------- |
+| `PUBLIC_TELEGRAM_URL`         | URL       | —             |
+| `PUBLIC_GITHUB_URL`           | URL       | —             |
+| `PUBLIC_PROJECT_ABOUT`        | URL/path  | —             |
+| `PUBLIC_PROJECT_ADVRTISEMENT` | URL/path  | —             |
+| `PUBLIC_PROJECT_AUTHORS`      | URL/path  | —             |
+| `PUBLIC_PROJECT_RULES`        | URL/path  | —             |
+| `PUBLIC_SHOW_SIDEBAR_BANNER`  | `bool`    | true          |
+
+Ссылки на ресурсы, отображаемые в левом сайдбаре. Значения формата `/post/ID-slug` — внутренние ссылки на посты.
+
+### Рекламные посты
+
+| Variable                      | Values    | Default Value |
+| ----------------------------- | --------- | ------------- |
+| `PUBLIC_AD_POST_IDS`          | `string`  | —             |
+
+**`PUBLIC_AD_POST_IDS`** — список ID постов через запятую (например, `1364,1291`), которые будут показаны в ленте как рекомендуемые/рекламные.
 
 ### Дополнительные настройки
 

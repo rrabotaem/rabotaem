@@ -188,16 +188,6 @@
     <Switch bind:checked={formData.reports_email_admins} defaultValue={true}>
       {$t('routes.admin.config.emailAdminsOnReport')}
     </Switch>
-    <Select
-      label={$t('routes.admin.config.listingType.label')}
-      bind:value={formData.default_post_listing_type}
-      class="w-max"
-    >
-      <option value="All">{$t('routes.admin.config.listingType.all')}</option>
-      <option value="Local">
-        {$t('routes.admin.config.listingType.local')}
-      </option>
-    </Select>
     <Switch bind:checked={formData.private_instance} defaultValue={true}>
       {$t('routes.admin.config.private')}
     </Switch>

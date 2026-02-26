@@ -70,11 +70,20 @@
   />
 {:else}
   <div
-    class="{baseClasses} {circle ? 'rounded-full' : 'rounded-lg'}"
+    class="dicebear-avatar {baseClasses} {circle ? 'rounded-full' : 'rounded-lg'} {class_}"
     style="width: {width}px; height: {width}px"
   >
     {@html createAvatar(initials, {
       seed: alt,
+      size: width,
     }).toString()}
   </div>
 {/if}
+
+<style>
+  .dicebear-avatar :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

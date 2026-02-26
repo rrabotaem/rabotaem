@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="text-slate-700 dark:text-zinc-200 flex flex-col w-max mx-auto items-center gap-4 {$$props.class}"
+  class="text-slate-700 dark:text-zinc-200 flex flex-col w-full max-w-sm mx-auto items-center gap-4 {$$props.class}"
 >
   <div class="flex flex-row gap-4 items-center max-w-sm">
     {#if icon}

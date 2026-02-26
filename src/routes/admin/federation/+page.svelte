@@ -187,8 +187,8 @@
       {''}
     </svelte:fragment>
   </FileInput>
-  <div class="flex flex-col md:flex-row gap-4">
-    <div class="flex-1 w-full max-h-[42rem] h-full flex flex-col gap-2">
+  <div class="flex flex-col md:flex-row gap-4 min-w-0">
+    <div class="flex-1 min-w-0 w-full max-h-[42rem] h-full flex flex-col gap-2">
       <h2 class="font-bold text-lg">{$t('routes.admin.federation.blocked')}</h2>
       <form
         on:submit|preventDefault={() =>
@@ -218,10 +218,10 @@
             {#each data.federated_instances.federated_instances.blocked.sort( (b, a) => b.domain.localeCompare(a.domain) ) as instance (instance.id)}
               <div
                 animate:flip={{ duration: 300, easing: expoOut }}
-                class="flex justify-between items-center first:pt-0 last:pb-0"
+                class="flex justify-between items-center gap-2 first:pt-0 last:pb-0"
               >
-                <div class="flex flex-col">
-                  <span class="font-medium">{instance.domain}</span>
+                <div class="flex flex-col min-w-0 overflow-hidden">
+                  <span class="font-medium truncate">{instance.domain}</span>
                   <span
                     class="text-xs text-slate-600 dark:text-zinc-400 capitalize"
                   >
@@ -256,7 +256,7 @@
         </EditableList>
       </Material>
     </div>
-    <div class="md:flex-1 w-full max-h-[42rem] flex flex-col gap-2">
+    <div class="md:flex-1 min-w-0 w-full max-h-[42rem] flex flex-col gap-2">
       <h2 class="font-bold text-lg flex items-center space-x-1">
         <span>{$t('routes.admin.federation.allowed')}</span>
         {#if allowInstance.instance || !(data.federated_instances.federated_instances.allowed?.length == 0)}
@@ -298,10 +298,10 @@
             {#each data.federated_instances.federated_instances.allowed.sort( (b, a) => b.domain.localeCompare(a.domain) ) as instance (instance.id)}
               <div
                 animate:flip={{ duration: 300, easing: expoOut }}
-                class="flex justify-between items-center first:pt-0 last:pb-0"
+                class="flex justify-between items-center gap-2 first:pt-0 last:pb-0"
               >
-                <div class="flex flex-col">
-                  <span class="font-medium">{instance.domain}</span>
+                <div class="flex flex-col min-w-0 overflow-hidden">
+                  <span class="font-medium truncate">{instance.domain}</span>
                   <span
                     class="text-xs text-slate-600 dark:text-zinc-400 capitalize"
                   >

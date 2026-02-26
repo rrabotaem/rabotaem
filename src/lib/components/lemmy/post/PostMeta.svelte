@@ -226,35 +226,38 @@
 >
   <div class="flex gap-4">
     <!-- Аватары -->
-    <div class="relative flex-shrink-0">
-      <a
-        href="/u/{user?.name}{user?.local === true ? '' : `@${getInstanceFromActorId(user?.actor_id, user?.local)}`}"
-        class="block cursor-pointer"
-        data-sveltekit-preload-data="tap"
-      >
-        <Avatar
-          url={user?.avatar}
-          width={48}
-          alt={user?.name}
-          circle={true}
-          class_="!rounded-full hover:ring-2 transition-all ring-offset-0 ring-primary-900 dark:ring-primary-100"
-        />
-      </a>
-      
-      {#if community}
+    <div class="flex-shrink-0 self-start">
+      <div style="position: relative; width: 48px; height: 48px;">
         <a
-          href="/c/{community.name}@{new URL(community.actor_id).hostname}"
-          class="absolute -bottom-1 -right-2 rounded-full overflow-hidden border-white dark:border-zinc-900 transition-all p-[2px]"
+          href="/u/{user?.name}{user?.local === true ? '' : `@${getInstanceFromActorId(user?.actor_id, user?.local)}`}"
+          class="block cursor-pointer"
           data-sveltekit-preload-data="tap"
         >
           <Avatar
-            url={community.icon}
-            width={24}
-            alt={community.name}
-            class_="!rounded-full hover:ring-2 hover:ring-primary-900 dark:hover:ring-primary-100 transition-all"
+            url={user?.avatar}
+            width={48}
+            alt={user?.name}
+            circle={true}
+            class_="!rounded-full hover:ring-2 transition-all ring-offset-0 ring-primary-900 dark:ring-primary-100"
           />
         </a>
-      {/if}
+
+        {#if community}
+          <a
+            href="/c/{community.name}@{new URL(community.actor_id).hostname}"
+            style="position: absolute; top: 8px; right: -8px;"
+            class="rounded-full overflow-hidden border-white dark:border-zinc-900 transition-all p-[2px]"
+            data-sveltekit-preload-data="tap"
+          >
+            <Avatar
+              url={community.icon}
+              width={24}
+              alt={community.name}
+              class_="!rounded-full hover:ring-2 hover:ring-primary-900 dark:hover:ring-primary-100 transition-all"
+            />
+          </a>
+        {/if}
+      </div>
     </div>
 
     <!-- Информация -->
