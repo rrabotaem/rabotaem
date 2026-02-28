@@ -164,7 +164,7 @@ import { env } from '$env/dynamic/public'
     slot="sidebar"
     let:style={s}
     let:class={c}
-    class="xl:pt-0 pt-20 {c}"
+    class="xl:pt-0 {c}"
     style={s}
   />
   <main

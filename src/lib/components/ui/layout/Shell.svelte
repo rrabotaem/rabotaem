@@ -50,9 +50,9 @@
           }
       } else return { top: 0, class: '!pb-20', bottom: 80 }
     } else {
-      if (!content) return { top: 0, class: '', bottom: 0 }
+      if (!content) return { top: 0, class: '!pt-0', bottom: 0 }
 
-      if (top) return { top: 72, class: '!pt-18', bottom: 0 } // Уменьшили с 96px до 72px
+      if (top) return { top: 72, class: '!pt-[4.5rem]', bottom: 0 } // 72px (4.5rem)
       else return { top: 0, class: '!pb-24', bottom: 96 }
     }
 

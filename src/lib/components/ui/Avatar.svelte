@@ -15,7 +15,7 @@
   export let class_: string = ''
 
   // Базовые классы для всех аватаров
-  const baseClasses = "aspect-square object-cover overflow-hidden flex-shrink-0 border border-slate-300 dark:border-zinc-700"
+  const baseClasses = "aspect-square object-cover overflow-hidden flex-shrink-0 border border-slate-300 dark:border-zinc-700 !m-0"
 
   const optimizeUrl = (
     url: string | undefined,

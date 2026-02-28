@@ -220,14 +220,13 @@
   This component will build two different things: a post's meta block and the title.
 -->
 <header
-  class="grid w-full meta text-xs min-w-0 max-w-full max-h-[3.75rem]"
+  class="grid w-full meta text-xs min-w-0 max-w-full"
   class:compact={view == 'compact'}
   style={$$props.style ?? ''}
 >
   <div class="flex gap-4">
     <!-- Аватары -->
-    <div class="flex-shrink-0 self-start">
-      <div style="position: relative; width: 48px; height: 48px;">
+    <div class="relative flex-shrink-0 w-12 h-12">
         <a
           href="/u/{user?.name}{user?.local === true ? '' : `@${getInstanceFromActorId(user?.actor_id, user?.local)}`}"
           class="block cursor-pointer"
@@ -245,8 +244,7 @@
         {#if community}
           <a
             href="/c/{community.name}@{new URL(community.actor_id).hostname}"
-            style="position: absolute; top: 8px; right: -8px;"
-            class="rounded-full overflow-hidden border-white dark:border-zinc-900 transition-all p-[2px]"
+            class="absolute -bottom-1 -right-2 rounded-full overflow-hidden border-white dark:border-zinc-900 transition-all p-[2px]"
             data-sveltekit-preload-data="tap"
           >
             <Avatar
@@ -257,7 +255,6 @@
             />
           </a>
         {/if}
-      </div>
     </div>
 
     <!-- Информация -->
@@ -457,7 +454,7 @@
 <style>
   .meta {
     grid-template-columns: 1fr auto;
-    gap: 1rem;
+    column-gap: 1rem;
     align-items: center;
   }
 </style>
