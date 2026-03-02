@@ -169,6 +169,39 @@
             ).join('')}
           </div>
         </div>`;
+      case 'table': {
+        const content = block.data.content || [];
+        const withHeadings = block.data.withHeadings || false;
+        if (content.length === 0) return '';
+        let html = '<div class="table-wrapper"><table class="editor-table">';
+        content.forEach((row: string[], rowIndex: number) => {
+          if (rowIndex === 0 && withHeadings) {
+            html += '<thead><tr>';
+            row.forEach((cell: string) => {
+              html += `<th>${cell || ''}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+          } else {
+            if (rowIndex === 1 && withHeadings) {
+              // tbody already opened
+            } else if (rowIndex === 0) {
+              html += '<tbody>';
+            }
+            html += '<tr>';
+            row.forEach((cell: string) => {
+              html += `<td>${cell || ''}</td>`;
+            });
+            html += '</tr>';
+          }
+        });
+        if (withHeadings) {
+          html += '</tbody>';
+        } else {
+          html += '</tbody>';
+        }
+        html += '</table></div>';
+        return html;
+      }
       case 'link':
       case 'customLink':
         const url = block.data.url || '#';
@@ -634,5 +667,28 @@ ${view == 'list' ? `max-h-24` : 'max-h-48'}`
     color: var(--btn-primary-color);
     text-decoration: none;
     box-shadow: var(--btn-primary-shadow-hover);
+  }
+
+  :global(.post-content .table-wrapper) {
+    @apply my-4 overflow-x-auto rounded-lg;
+  }
+
+  :global(.post-content .editor-table) {
+    @apply w-full border-collapse text-sm;
+  }
+
+  :global(.post-content .editor-table th) {
+    @apply bg-slate-100 dark:bg-zinc-800 px-4 py-2 text-left font-semibold
+    border border-slate-200 dark:border-zinc-700
+    text-slate-700 dark:text-zinc-300;
+  }
+
+  :global(.post-content .editor-table td) {
+    @apply px-4 py-2 border border-slate-200 dark:border-zinc-700
+    text-slate-600 dark:text-zinc-400;
+  }
+
+  :global(.post-content .editor-table tbody tr:hover) {
+    @apply bg-slate-50 dark:bg-zinc-800/50;
   }
 </style>

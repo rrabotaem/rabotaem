@@ -62,6 +62,7 @@
     "@editorjs/link": "^2.6.2",
     "@editorjs/list": "^2.0.6",
     "@editorjs/quote": "^2.7.6",
+    "@editorjs/table": "^2.4.5",
     "@svelte-put/qr": "^1.2.1",
     "@tiptap/core": "^2.11.2",
     "@tiptap/extension-image": "^2.11.3",

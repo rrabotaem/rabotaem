@@ -27,7 +27,8 @@
     link: `${iconPath}/link-45deg.svg`,
     italic: `${iconPath}/type-italic.svg`,
     bold: `${iconPath}/type-bold.svg`,
-    text: `${iconPath}/type.svg`
+    text: `${iconPath}/type.svg`,
+    table: `${iconPath}/table.svg`
   }
 
   // Кастомный плагин для ссылок
@@ -1487,7 +1488,8 @@
       { default: Code },
       { default: AlignmentBlockTune },
       { default: LinkTool },
-      { default: Embed }
+      { default: Embed },
+      { default: Table }
     ] = await Promise.all([
       import('@editorjs/editorjs'),
       import('@editorjs/header'),
@@ -1497,7 +1499,8 @@
       import('@editorjs/code'),
       import('editorjs-text-alignment-blocktune'),
       import('@editorjs/link'),
-      import('@editorjs/embed')
+      import('@editorjs/embed'),
+      import('@editorjs/table')
     ])
 
     // Инициализация Editor.js
@@ -1543,6 +1546,19 @@
           toolbox: {
             title: 'Код',
             icon: `<img src="${icons.code}" width="16" height="16" />`
+          }
+        },
+        table: {
+          class: Table,
+          inlineToolbar: true,
+          toolbox: {
+            title: 'Таблица',
+            icon: `<img src="${icons.table}" width="16" height="16" />`
+          },
+          config: {
+            rows: 2,
+            cols: 3,
+            withHeadings: true
           }
         },
         gallery: GalleryTool,
@@ -1765,7 +1781,8 @@
             "Checklist": "Чек-лист",
             "Numbered List": "Нумерованный список",
             "Heading 2": "Заголовок 2",
-            "Heading 3": "Заголовок 3"
+            "Heading 3": "Заголовок 3",
+            "Table": "Таблица"
           },
           tools: {
             "warning": {
@@ -1796,6 +1813,16 @@
             },
             "embed": {
               "Enter a caption": "Введите подпись"
+            },
+            "table": {
+              "Add column to left": "Добавить столбец слева",
+              "Add column to right": "Добавить столбец справа",
+              "Delete column": "Удалить столбец",
+              "Add row above": "Добавить строку выше",
+              "Add row below": "Добавить строку ниже",
+              "Delete row": "Удалить строку",
+              "With headings": "С заголовками",
+              "Without headings": "Без заголовков"
             }
           },
           blockTunes: {
@@ -3146,4 +3173,43 @@
     width: 200px;
     margin-bottom: 0;
   }
-</style> 
+
+  /* Таблица: убираем ограничения ширины */
+  :global(.ce-block:has(.tc-wrap)) {
+    max-width: 100% !important;
+  }
+
+  :global(.ce-block:has(.tc-wrap) .ce-block__content) {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  :global(.tc-wrap) {
+    overflow: visible;
+    max-width: 100%;
+  }
+
+  :global(.tc-table) {
+    overflow-x: auto;
+  }
+
+  :global(.tc-table--heading .tc-row:first-child) {
+    z-index: 1 !important;
+  }
+
+  :global(.tc-toolbox) {
+    z-index: 10 !important;
+  }
+
+  :global(.tc-popover) {
+    z-index: 100 !important;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 15px -3px rgba(13, 20, 33, 0.13);
+  }
+
+  :global(.dark .tc-popover) {
+    background: #1e293b;
+  }
+</style>

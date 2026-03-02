@@ -411,6 +411,34 @@
           <source src="${videoUrl}" type="${videoType}">
           Ваш браузер не поддерживает видео.
         </video></p>${videoCaption}`;
+      case 'table': {
+        const tableContent = block.data.content || [];
+        const withHeadings = block.data.withHeadings || false;
+        if (tableContent.length === 0) return '';
+        let html = `<div class="table-wrapper"${anchorId}><table class="editor-table">`;
+        tableContent.forEach((row: string[], rowIndex: number) => {
+          if (rowIndex === 0 && withHeadings) {
+            html += '<thead><tr>';
+            row.forEach((cell: string) => {
+              html += `<th>${cell || ''}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+          } else {
+            if (rowIndex === 1 && withHeadings) {
+              // tbody already opened after thead
+            } else if (rowIndex === 0) {
+              html += '<tbody>';
+            }
+            html += '<tr>';
+            row.forEach((cell: string) => {
+              html += `<td>${cell || ''}</td>`;
+            });
+            html += '</tr>';
+          }
+        });
+        html += '</tbody></table></div>';
+        return html;
+      }
       default:
         return '';
     }
@@ -481,8 +509,8 @@
         console.log(content);
 
         processedContent = DOMPurify.sanitize(content, {
-          ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'img', 'figure', 'figcaption', 'div', 'blockquote', 'pre', 'code', 'input', 'iframe', 'footer', 'video', 'source'],
-          ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'width', 'height', 'loading', 'class', 'data-index', 'data-url', 'type', 'checked', 'disabled', 'data-caption', 'id', 'style', 'frameborder', 'allowfullscreen', 'allow', 'controls']
+          ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'figure', 'figcaption', 'div', 'blockquote', 'pre', 'code', 'input', 'iframe', 'footer', 'video', 'source', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'span'],
+          ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'srcset', 'sizes', 'alt', 'title', 'width', 'height', 'loading', 'class', 'data-index', 'data-url', 'type', 'checked', 'disabled', 'data-caption', 'id', 'style', 'frameborder', 'allowfullscreen', 'allow', 'controls', 'fetchpriority']
         });
       } catch (error) {
         console.error('Error processing post body:', error);
@@ -1671,6 +1699,30 @@
   :global(.post-content strong),
   :global(.post-content b) {
     font-weight: 500;
+  }
+
+  /* Таблица */
+  :global(.post-content .table-wrapper) {
+    @apply my-4 overflow-x-auto rounded-lg;
+  }
+
+  :global(.post-content .editor-table) {
+    @apply w-full border-collapse text-sm;
+  }
+
+  :global(.post-content .editor-table th) {
+    @apply bg-slate-100 dark:bg-zinc-800 px-4 py-2 text-left font-semibold
+    border border-slate-200 dark:border-zinc-700
+    text-slate-700 dark:text-zinc-300;
+  }
+
+  :global(.post-content .editor-table td) {
+    @apply px-4 py-2 border border-slate-200 dark:border-zinc-700
+    text-slate-600 dark:text-zinc-400;
+  }
+
+  :global(.post-content .editor-table tbody tr:hover) {
+    @apply bg-slate-50 dark:bg-zinc-800/50;
   }
 
 </style>
