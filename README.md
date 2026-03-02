@@ -79,6 +79,7 @@
 - 🌐 **[rabotaem.app](https://rabotaem.app/)** — основная площадка проекта
 - 📝 **[kanun.blog](https://kanun.blog/)** — пример независимого блога
 - 📰 **[zavtra.io](https://zavtra.io/)** — пример медиа-платформы
+- 📰 **[neyrogram.com](https://neyrogram.com/)** — пример медиа-платформы
 
  
 
