@@ -140,7 +140,7 @@
 {/if}
 
 <li
-  class="relative w-full {showPostInfo
+  class="relative w-full overflow-hidden {showPostInfo
     ? 'p-5 bg-white dark:bg-zinc-900 rounded-xl'
     : 'py-3'} {node.comment_view.comment.distinguished
     ? ' text-primary-900 dark:text-primary-100'
@@ -283,7 +283,7 @@
       </div>
     {/if}
   {/if}
-  <div class="relative w-full {$$props.contentClass || ''}">
+  <div class="relative {$$props.contentClass || ''}">
     <div
       class="flex flex-col whitespace-pre-wrap
       max-w-full gap-3 mt-3 relative w-full"
