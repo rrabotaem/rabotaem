@@ -63,9 +63,9 @@ export async function load({ params, url, fetch }) {
   })
 
   // Получаем лучшие посты из текущего сообщества
-  const communityPosts = await getClient().getPosts({
+  const communityPosts = await getClient(env.PUBLIC_INSTANCE_URL).getPosts({
     type_: "Local",
-    sort: "TopAll", 
+    sort: "TopAll",
     limit: 20,
     community_id: post.community_view.community.id
   })
@@ -80,7 +80,8 @@ export async function load({ params, url, fetch }) {
       page: 1
     },
     url: url,
-    fetch: fetch
+    fetch: fetch,
+    instanceURL: env.PUBLIC_INSTANCE_URL
   })
 
   // Рекламные посты из ENV (PUBLIC_AD_POST_IDS=123,456,789)
