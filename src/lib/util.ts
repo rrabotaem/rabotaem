@@ -326,13 +326,39 @@ export function getRandomDefaultAvatar(): string {
 }
 
 /**
+ * Декодирует base64 строку в UTF-8 текст (работает и в браузере, и в Node.js/SSR)
+ */
+function base64ToUtf8(base64: string): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(base64, 'base64').toString('utf-8')
+  }
+  const binaryString = atob(base64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return new TextDecoder().decode(bytes)
+}
+
+/**
+ * Кодирует UTF-8 текст в base64 строку (работает и в браузере, и в Node.js/SSR)
+ */
+function utf8ToBase64(str: string): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str, 'utf-8').toString('base64')
+  }
+  const bytes = new TextEncoder().encode(str)
+  const binaryString = String.fromCodePoint(...bytes)
+  return btoa(binaryString)
+}
+
+/**
  * Сериализует модель EditorJS в base64
  */
 export function serializeEditorModel(data: any): string {
   try {
     const jsonString = JSON.stringify(data)
-    // Используем btoa для преобразования в base64
-    return btoa(unescape(encodeURIComponent(jsonString)))
+    return utf8ToBase64(jsonString)
   } catch (error) {
     console.error('Ошибка при сериализации модели:', error)
     throw new Error('Не удалось сериализовать модель редактора')
@@ -347,14 +373,14 @@ export function deserializeEditorModel(base64Data: string): any {
     if (!base64Data || base64Data.trim() === '') {
       return { blocks: [] }
     }
-    
+
     // Проверяем, является ли это уже JSON (для обратной совместимости)
     if (base64Data.startsWith('{') && base64Data.endsWith('}')) {
       return JSON.parse(base64Data)
     }
-    
+
     // Декодируем из base64
-    const jsonString = decodeURIComponent(escape(atob(base64Data)))
+    const jsonString = base64ToUtf8(base64Data)
     return JSON.parse(jsonString)
   } catch (error) {
     console.error('Ошибка при десериализации модели:', error)
