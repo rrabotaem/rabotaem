@@ -833,46 +833,16 @@
             const embedCaption = block.data.caption ? `<div class="embed-caption">${escapeHtml(block.data.caption)}</div>` : '';
             return `<div class="embed-container"${anchorText ? ` id="${anchorText}"` : ''}>
               <div class="embed-responsive" style="padding-bottom: ${(block.data.height / block.data.width * 100).toFixed(2)}%">
-                <iframe
-                  src="${block.data.embed}"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                <iframe 
+                  src="${block.data.embed}" 
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                   allowfullscreen
                   loading="lazy"
                 ></iframe>
               </div>
               ${embedCaption}
             </div>`;
-          case 'video': {
-            if (!block.data?.file?.url) return '';
-            const videoUrl = block.data.file.url;
-            let videoType = 'video/mp4';
-            if (videoUrl.includes('.webm')) videoType = 'video/webm';
-            else if (videoUrl.includes('.mov')) videoType = 'video/quicktime';
-            const videoCaption = block.data.caption ? `<figcaption>${escapeHtml(block.data.caption)}</figcaption>` : '';
-            return `<p${anchorText ? ` id="${anchorText}"` : ''}><video controls style="max-width: 100%; height: auto; border-radius: 0.5rem;">
-              <source src="${videoUrl}" type="${videoType}">
-            </video></p>${videoCaption}`;
-          }
-          case 'table': {
-            const tableContent = block.data.content || [];
-            const withHeadings = block.data.withHeadings || false;
-            if (tableContent.length === 0) return '';
-            let html = `<div class="table-wrapper"${anchorText ? ` id="${anchorText}"` : ''}><table class="editor-table">`;
-            tableContent.forEach((row: string[], rowIndex: number) => {
-              if (rowIndex === 0 && withHeadings) {
-                html += '<thead><tr>';
-                row.forEach((cell: string) => { html += `<th>${cell || ''}</th>`; });
-                html += '</tr></thead><tbody>';
-              } else {
-                html += '<tr>';
-                row.forEach((cell: string) => { html += `<td>${cell || ''}</td>`; });
-                html += '</tr>';
-              }
-            });
-            html += '</tbody></table></div>';
-            return html;
-          }
           default:
             return '';
         }

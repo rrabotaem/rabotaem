@@ -326,39 +326,19 @@ export function getRandomDefaultAvatar(): string {
 }
 
 /**
- * Декодирует base64 строку в UTF-8 текст (работает и в браузере, и в Node.js/SSR)
- */
-function base64ToUtf8(base64: string): string {
-  if (typeof Buffer !== 'undefined') {
-    return Buffer.from(base64, 'base64').toString('utf-8')
-  }
-  const binaryString = atob(base64)
-  const bytes = new Uint8Array(binaryString.length)
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i)
-  }
-  return new TextDecoder().decode(bytes)
-}
-
-/**
- * Кодирует UTF-8 текст в base64 строку (работает и в браузере, и в Node.js/SSR)
- */
-function utf8ToBase64(str: string): string {
-  if (typeof Buffer !== 'undefined') {
-    return Buffer.from(str, 'utf-8').toString('base64')
-  }
-  const bytes = new TextEncoder().encode(str)
-  const binaryString = String.fromCodePoint(...bytes)
-  return btoa(binaryString)
-}
-
-/**
- * Сериализует модель EditorJS в base64
+ * Сериализует модель EditorJS в hex-строку с префиксом "0x"
+ * Hex не содержит букв a-z (только 0-9a-f), поэтому Lemmy slur filter его не трогает
  */
 export function serializeEditorModel(data: any): string {
   try {
     const jsonString = JSON.stringify(data)
-    return utf8ToBase64(jsonString)
+    const encoder = new TextEncoder()
+    const bytes = encoder.encode(jsonString)
+    let hex = '0x'
+    for (let i = 0; i < bytes.length; i++) {
+      hex += bytes[i].toString(16).padStart(2, '0')
+    }
+    return hex
   } catch (error) {
     console.error('Ошибка при сериализации модели:', error)
     throw new Error('Не удалось сериализовать модель редактора')
@@ -366,25 +346,37 @@ export function serializeEditorModel(data: any): string {
 }
 
 /**
- * Десериализует модель EditorJS из base64
+ * Десериализует модель EditorJS из hex (с префиксом "0x") или base64 (обратная совместимость)
  */
-export function deserializeEditorModel(base64Data: string): any {
+export function deserializeEditorModel(encodedData: string): any {
   try {
-    if (!base64Data || base64Data.trim() === '') {
+    if (!encodedData || encodedData.trim() === '') {
       return { blocks: [] }
     }
 
-    // Проверяем, является ли это уже JSON (для обратной совместимости)
-    if (base64Data.startsWith('{') && base64Data.endsWith('}')) {
-      return JSON.parse(base64Data)
+    const trimmed = encodedData.trim()
+
+    // JSON (обратная совместимость)
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      return JSON.parse(trimmed)
     }
 
-    // Декодируем из base64
-    const jsonString = base64ToUtf8(base64Data)
+    // Hex формат (новый)
+    if (trimmed.startsWith('0x')) {
+      const hex = trimmed.slice(2)
+      const bytes = new Uint8Array(hex.length / 2)
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16)
+      }
+      const jsonString = new TextDecoder().decode(bytes)
+      return JSON.parse(jsonString)
+    }
+
+    // Base64 формат (обратная совместимость со старыми постами)
+    const jsonString = decodeURIComponent(escape(atob(trimmed)))
     return JSON.parse(jsonString)
   } catch (error) {
     console.error('Ошибка при десериализации модели:', error)
-    // Возвращаем пустую модель в случае ошибки
     return { blocks: [] }
   }
 }

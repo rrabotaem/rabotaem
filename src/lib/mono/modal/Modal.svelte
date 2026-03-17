@@ -21,7 +21,7 @@
   {#if open}
     <div
       role="dialog"
-      class="overflow-hidden fixed top-0 left-0 w-screen h-screen z-[100]
+      class="overflow-auto fixed top-0 left-0 w-screen h-screen z-[100]
 flex flex-col items-center justify-center backdrop-blur-sm
 bg-white/50 dark:bg-black/50 box-border p-4"
       transition:fade|global={{ duration: 100 }}
@@ -37,7 +37,7 @@ bg-white/50 dark:bg-black/50 box-border p-4"
         }}
         class="w-full border border-slate-200 border-b-slate-300
 				dark:border-zinc-900 dark:border-t-zinc-800 dark:border-b-zinc-900
-				rounded-2xl max-w-lg box-border mx-auto overscroll-contain shadow-lg overflow-auto
+				rounded-2xl max-w-lg max-h-[calc(100vh-2rem)] box-border mx-auto overscroll-contain shadow-lg overflow-auto
 				p-5 flex flex-col gap-2 dark:bg-zinc-925
           bg-white relative"
       >
